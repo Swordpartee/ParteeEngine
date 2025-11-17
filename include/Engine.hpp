@@ -6,7 +6,8 @@
 
 namespace ParteeEngine {
     class Window;
-    class Renderer; 
+    class Renderer;
+    class CollisionSystem; 
 
     class Engine {
 
@@ -26,6 +27,7 @@ namespace ParteeEngine {
 
             Window* window;
             Renderer* renderer;
+            CollisionSystem* collisionSystem;
 
             std::vector<Entity> entities;
     };

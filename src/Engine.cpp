@@ -1,16 +1,19 @@
 #include "Engine.hpp"
 #include "Window.hpp"
 #include "Renderer.hpp"
+#include "CollisionSystem.hpp"
 #include "Vector3.hpp"
 #include "components/RenderComponent.hpp"
 #include "components/PhysicsComponent.hpp"
 #include "components/ColliderComponent.hpp"
+
 
 namespace ParteeEngine {
 
     Engine::Engine(int width, int height) : width(width), height(height) {
         window = new Window(width, height);
         renderer = new Renderer();
+        collisionSystem = new CollisionSystem();
         
         // Initialize the renderer after OpenGL context is created
         renderer->initialize(width, height);
@@ -24,7 +27,8 @@ namespace ParteeEngine {
 
             for (Entity &e : entities) { e.updateComponent<PhysicsComponent>(0.0016f); }
 
-            for (Entity &e : entities) { e.updateComponent<ColliderComponent>(0.0016f); }
+            // Update collisions
+            collisionSystem->updateCollisions(entities);
 
             // Update and render entities
             for (Entity& e : entities) {

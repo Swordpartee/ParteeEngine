@@ -11,8 +11,8 @@ namespace ParteeEngine {
     struct CollisionEvent : public Event{
         public:
             CollisionEvent(const Entity& first, const Entity& second) : first_(first), second_(second) {}
-            const Entity& getFirstEntity() { return first_; }
-            const Entity& getSecondEntity() { return second_; }
+            const Entity &getFirst() { return first_; }
+            const Entity &getSecond() { return second_; }
 
         private:
             const Entity& first_;

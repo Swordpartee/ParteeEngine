@@ -16,9 +16,9 @@ namespace ParteeEngine
             void subscribe(std::function<void(const T &)> callback);
 
             template <typename T>
-            void emit(const T &e);
+            void publish(const T &e);
 
-            static EventBus &instance()
+            static EventBus &getInstance()
             {
                 static EventBus bus;
                 return bus;
@@ -37,7 +37,7 @@ namespace ParteeEngine
     };
 
     template <typename T>
-    void EventBus::emit(const T &e) 
+    void EventBus::publish(const T &e) 
     {
         auto type = std::type_index(typeid(T));
         for (auto& fn : subscribers[type]) 

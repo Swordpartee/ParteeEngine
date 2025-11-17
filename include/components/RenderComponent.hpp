@@ -19,6 +19,6 @@ namespace ParteeEngine {
 
             // Rendering properties
             bool visible = true;
-            enum RenderType { SQUARE, CUBE } type = SQUARE;
+            enum RenderType { SQUARE, CUBE } type = SQUARE;        
     };
 }

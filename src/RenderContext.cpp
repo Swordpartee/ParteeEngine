@@ -51,7 +51,6 @@ namespace ParteeEngine {
 
     void RenderContext::present() {
         glFlush();
-        // Note: SwapBuffers is handled by Window class
     }
 
     void RenderContext::pushMatrix() {

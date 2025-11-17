@@ -15,20 +15,37 @@ namespace ParteeEngine
         public:
             void requireDependencies(Entity &owner) override;
 
+            void onAttach(Entity &owner) override;
+
             void update(Entity& owner, float dt) override;
 
             void applyForce(const Vector3 &force);
 
+            void setVelocity(const Vector3 &vel);
+
+            Vector3 getVelocity() const {
+                return velocity;
+            }
+
+            void setAcceleration(const Vector3 &acc);
+            Vector3 getAcceleration() const {
+                return acceleration;
+            }
+
             void applyImpulse(const Vector3 &impulse);
 
-            void resetAcceleration();
+            void resetMotion();
 
-            void onCollide(CollisionEvent e);
+            void setCollisionsEnabled(const bool enabled) {
+                collisionsEnabled = enabled;
+            }
 
             PhysicsComponent() : velocity(0.0f, 0.0f, 0.0f), acceleration(0.0f, 0.0f, 0.0f) {}
 
         private:
             Vector3 velocity;
             Vector3 acceleration;
+
+            bool collisionsEnabled = true;
     };
 }
