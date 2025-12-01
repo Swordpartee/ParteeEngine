@@ -11,7 +11,7 @@ BUILD_DIR = build
 INCLUDE_DIR = include
 
 # Find all .cpp files in src directory
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/**/*.cpp)
+SOURCES = $(shell find $(SRC_DIR) -name "*.cpp")
 
 # Target executable in build directory
 TARGET = $(BUILD_DIR)/main.exe

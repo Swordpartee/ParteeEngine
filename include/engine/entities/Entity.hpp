@@ -6,35 +6,39 @@
 
 namespace ParteeEngine {
 
-    template <typename T>
-    concept IsComponent = std::is_base_of_v<Component, T>;
+    // template <typename T>
+    // concept IsComponent = std::is_base_of_v<Component, T>;
 
     class Entity {
     public:
         Entity() = default;
         ~Entity() = default;
 
-        template <IsComponent T>
-        T& addComponent();
+        // Delete copy and allow move assignments
+        Entity(const Entity &) = delete;
+        Entity &operator=(const Entity &) = delete;
+        Entity(Entity &&) noexcept = default;
+        Entity &operator=(Entity &&) noexcept = default;
 
-        template <IsComponent T>
-        T* getComponent();
+        template <typename T>
+        T &addComponent();
+
+        template <typename T>
+        T *getComponent();
 
     private:
         std::vector<std::unique_ptr<Component>> components;
         
     };
 
-    template <IsComponent T>
-    T& addComponent() {
-        auto component = std::make_unique<T>();
-        T& ref = *component;
-        components.emplace_back(std::move(component));
-        return ref;
+    template <typename T>
+    T& Entity::addComponent() {
+        components.emplace_back(std::make_unique<T>());
+        return *static_cast<T*>(components.back().get());
     }
 
-    template <IsComponent T>
-    T* getComponent() {
+    template <typename T>
+    T* Entity::getComponent() {
         for (const auto& comp : components) {
             if (auto ptr = dynamic_cast<T*>(comp.get())) {
                 return ptr;

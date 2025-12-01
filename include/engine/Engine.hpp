@@ -11,18 +11,17 @@
 namespace ParteeEngine {
 
     // Module concept
-    template <typename T>
-    concept IsModule = std::is_base_of_v<Module, T>;
+    // template <typename T>
+    // concept IsModule = std::is_base_of_v<Module, T>;
 
-    struct ModuleUpdateInputs {
-        std::vector<Entity>& entities;
-    };
+    struct ModuleInputs;
+    struct ModuleUpdateInputs;
 
     class Engine {
     public:
         Engine();
 
-        template <IsModule T>
+        template <typename T>
         T& addModule();
 
         Entity &createEntity();
@@ -38,12 +37,10 @@ namespace ParteeEngine {
         void update();
     };
 
-    template <IsModule T>
-    T& Engine::addModule() {
-        auto module = std::make_unique<T>();
-        T &ref = *module;
-        modules.emplace_back(std::move(module));
-        return ref;
+    template <typename T>
+    T &Engine::addModule() {
+        modules.emplace_back(std::make_unique<T>());
+        return *static_cast<T *>(modules.back().get());
     }
 
 } // namespace ParteeEngine
