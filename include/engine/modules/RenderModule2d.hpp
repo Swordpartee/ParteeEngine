@@ -14,4 +14,11 @@ namespace ParteeEngine {
     private:
         Window* window;
     };
+
+    // Specialize trait
+    template <>
+    struct ModuleTraits<RenderModule2d> {
+        static constexpr bool unique = true;
+        static constexpr ModuleCategory categories = ModuleCategory::Renderer;
+    };
 } // namespace ParteeEngine

@@ -34,6 +34,8 @@ namespace ParteeEngine {
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<Entity> entities;
 
+        unsigned moduleCategoryMask = 0;
+
         ModuleInputs moduleInputs{window};
 
         void update();
@@ -41,6 +43,18 @@ namespace ParteeEngine {
 
     template <typename T>
     T &Engine::addModule() {
+        const unsigned catMask = static_cast<unsigned>(ModuleTraits<T>::categories);
+
+        if (ModuleTraits<T>::unique && catMask) {
+            if ((moduleCategoryMask & catMask) != 0u) {
+                throw std::runtime_error("Module category already present");
+            }
+        }
+
+        if (modules.find(std::type_index(typeid(T))) != modules.end()) {
+            throw std::runtime_error("Module type already present");
+        }
+
         modules.emplace_back(std::make_unique<T>());
         modules.back()->initialize(moduleInputs);
         return *static_cast<T *>(modules.back().get());

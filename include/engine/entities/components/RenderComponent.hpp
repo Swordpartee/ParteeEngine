@@ -34,4 +34,10 @@ namespace ParteeEngine {
         RenderData renderData;
     };
 
+    template <>
+    struct ComponentTraits<RenderComponent> {
+        static constexpr bool unique = true;
+        static constexpr ComponentCategory categories = ComponentCategory::Render;
+    };
+
 } // namespace ParteeEngine

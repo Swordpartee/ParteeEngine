@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "engine/entities/components/Component.hpp"
+#include "engine/entities/components/ComponentTraits.hpp"
 
 namespace ParteeEngine {
 
@@ -36,10 +37,24 @@ namespace ParteeEngine {
 
     private:
         std::unordered_map<std::type_index, std::unique_ptr<Component>> components;
+        unsigned componentTraitMask = 0;
+
     };
 
     template <typename T>
     T& Entity::addComponent() {
+        // Enforce unique per category
+        const unsigned traitMask = static_cast<unsigned>(ComponentTraits<T>::categories);
+        if (ComponentTraits<T>::unique && traitMask != 0u) {
+            if ((componentTraitMask & traitMask) != 0u) {
+                throw std::runtime_error("Component category already present on entity");
+            }
+        }
+
+        if (components.find(std::type_index(typeid(T))) != components.end()) {
+            throw std::runtime_error("Component type already present on entity");
+        }
+
         auto comp = std::make_unique<T>(*this);
         T &ref = *comp;
 

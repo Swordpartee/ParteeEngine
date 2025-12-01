@@ -20,4 +20,11 @@ namespace ParteeEngine {
         Vector3 rotation;
     };
 
+    template <>
+    struct ComponentTraits<TransformComponent>
+    {
+        static constexpr bool unique = true;
+        static constexpr ComponentCategory categories = ComponentCategory::Transform;
+    };
+
 } // namespace ParteeEngine
