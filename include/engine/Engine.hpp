@@ -34,12 +34,15 @@ namespace ParteeEngine {
         std::vector<std::unique_ptr<Module>> modules;
         std::vector<Entity> entities;
 
+        ModuleInputs moduleInputs{window};
+
         void update();
     };
 
     template <typename T>
     T &Engine::addModule() {
         modules.emplace_back(std::make_unique<T>());
+        modules.back()->initialize(moduleInputs);
         return *static_cast<T *>(modules.back().get());
     }
 

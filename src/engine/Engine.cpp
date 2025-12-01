@@ -10,11 +10,6 @@ namespace ParteeEngine {
     }
 
     void Engine::run() {
-        ModuleInputs inputs{window};
-        for (auto& module : modules) {
-            module->initialize(inputs);
-        }
-
         window.show();
 
         while (window.processMessages()) {

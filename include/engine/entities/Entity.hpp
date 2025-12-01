@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vector>
 #include <memory>
+#include <typeindex>
+#include <unordered_map>
+
 #include "engine/entities/components/Component.hpp"
 
 namespace ParteeEngine {
@@ -26,25 +28,56 @@ namespace ParteeEngine {
         template <typename T>
         T *getComponent();
 
+        template <typename T>
+        const T *getComponent() const;
+
+        template <typename T>
+        T &ensureComponent();
+
     private:
-        std::vector<std::unique_ptr<Component>> components;
-        
+        std::unordered_map<std::type_index, std::unique_ptr<Component>> components;
     };
 
     template <typename T>
     T& Entity::addComponent() {
-        components.emplace_back(std::make_unique<T>());
-        return *static_cast<T*>(components.back().get());
+        auto comp = std::make_unique<T>(*this);
+        T &ref = *comp;
+
+        components[std::type_index(typeid(T))] = std::move(comp);
+
+        ref.ensureDependencies();
+        ref.onAttach();
+
+        return ref;
     }
 
     template <typename T>
     T* Entity::getComponent() {
-        for (const auto& comp : components) {
-            if (auto ptr = dynamic_cast<T*>(comp.get())) {
-                return ptr;
-            }
+        auto it = components.find(std::type_index(typeid(T)));
+        if (it != components.end())
+        {
+            return static_cast<T *>(it->second.get());
         }
         return nullptr;
+    }
+
+    template <typename T>
+    const T *Entity::getComponent() const
+    {
+        auto it = components.find(std::type_index(typeid(T)));
+        if (it != components.end())
+        {
+            return static_cast<const T *>(it->second.get());
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    T& Entity::ensureComponent()
+    {
+        if (auto *existing = getComponent<T>())
+            return *existing;
+        return addComponent<T>();
     }
 
 } // namespace ParteeEngine

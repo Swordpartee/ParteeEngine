@@ -3,7 +3,12 @@
 #include <GL/gl.h>
 #include <windows.h>
 
+#include "engine/entities/components/RenderComponent.hpp"
+#include "engine/entities/components/TransformComponent.hpp"
+
 namespace ParteeEngine {
+
+    struct RenderData;
 
     void RenderModule2d::initialize(const ModuleInputs &inputs) {
         window = &inputs.window;
@@ -47,15 +52,26 @@ namespace ParteeEngine {
         // Render each entity
         for (const auto &entity : inputs.entities)
         {
-            // Check if entity has a renderable component
-            // Example: drawing a simple rectangle
+            auto *renderComp = entity.getComponent<RenderComponent>();
+            if (!renderComp) continue;
+
+            const RenderData &data = renderComp->getRenderData();
+            if (data.sprite.textureID == 0) continue; // Skip if no texture
+            
+            // Get position from transform component
+            auto *transformComp = entity.getComponent<TransformComponent>();
+            if (!transformComp) continue;
+            
+            const auto &position = transformComp->getPosition();
+            
+            // Draw a square at entity's position
             glBegin(GL_QUADS);
-            glColor3f(1.0f, 0.0f, 0.0f); // Red
-            glVertex2f(100.0f, 100.0f);
-            glVertex2f(200.0f, 100.0f);
-            glVertex2f(200.0f, 200.0f);
-            glVertex2f(100.0f, 200.0f);
+            glVertex2f(position.x, position.y);
+            glVertex2f(position.x + data.sprite.width, position.y);
+            glVertex2f(position.x + data.sprite.width, position.y + data.sprite.height);
+            glVertex2f(position.x, position.y + data.sprite.height);
             glEnd();
+
         }
 
         // Swap buffers (show what we drew)
