@@ -4,12 +4,6 @@ namespace ParteeEngine {
 
     Entity::Entity(int id) : id(id) {}
 
-    void Entity::update(float dt) {
-        for (auto& pair : components_) {
-            pair.second->update(*this, dt);
-        }
-    }
-
     // void Entity::sortComponents() {
     //     std::vector<Component*> sorted;
     //     std::unordered_set<std::type_index> visited;

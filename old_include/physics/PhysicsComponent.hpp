@@ -17,7 +17,7 @@ namespace ParteeEngine
 
             void onAttach(Entity &owner) override;
 
-            void update(Entity& owner, float dt) override;
+            void updatePhysics(Entity& owner, float dt);
 
             void applyForce(const Vector3 &force);
 

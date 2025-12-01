@@ -14,7 +14,5 @@ namespace ParteeEngine {
             virtual void onAttach(Entity &owner) {}
 
             virtual void requireDependencies(Entity&) {}
-
-            virtual void update(Entity& owner, float dt) {}
     };
 } // namespace ParteeEngine

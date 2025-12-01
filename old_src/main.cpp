@@ -15,7 +15,7 @@ int main()
 
     thingy2.addComponent<ParteeEngine::RenderComponent>();
 
-    thingy2.addComponent<ParteeEngine::ColliderComponent, ParteeEngine::ColliderType>(ParteeEngine::ColliderType::SQUARE);
+    thingy2.addComponent<ParteeEngine::ColliderComponent, ParteeEngine::ColliderType>(ParteeEngine::ColliderType::CUBE);
 
     ParteeEngine::Entity &thingy = engine.createEntity();
 
@@ -24,10 +24,10 @@ int main()
     thingy.addComponent<ParteeEngine::PhysicsComponent>();
     thingy.getComponent<ParteeEngine::TransformComponent>()->setPosition(-3, -3, 0);
 
-    thingy.addComponent<ParteeEngine::ColliderComponent, ParteeEngine::ColliderType>(ParteeEngine::ColliderType::SQUARE);
+    thingy.addComponent<ParteeEngine::ColliderComponent, ParteeEngine::ColliderType>(ParteeEngine::ColliderType::CUBE);
 
-    thingy.getComponent<ParteeEngine::PhysicsComponent>()->applyImpulse(ParteeEngine::Vector3(5.0f, 0.0f, 0.0f));
-    thingy.getComponent<ParteeEngine::PhysicsComponent>()->applyForce(ParteeEngine::Vector3(0.0f, 30.0f, 0.0f));
+    thingy.getComponent<ParteeEngine::PhysicsComponent>()->applyImpulse(ParteeEngine::Vector3(1.0f, 0.0f, -3.0f));
+    thingy.getComponent<ParteeEngine::PhysicsComponent>()->applyForce(ParteeEngine::Vector3(0.0f, 1.2f, 0.0f));
 
     ParteeEngine::EventBus::getInstance().subscribe<ParteeEngine::CollisionEvent>([](ParteeEngine::CollisionEvent e)
         { std::printf("Colliding! %d\n", e.getFirst().getID()); std::fflush(stdout); });
@@ -35,4 +35,4 @@ int main()
     engine.start();
 
     return 0;
-}
+} 

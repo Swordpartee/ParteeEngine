@@ -16,7 +16,7 @@ namespace ParteeEngine
         private:
             void checkCollision(Entity &e1, Entity &e2);
 
-            void resolveSquareSquareCollision(Entity &e1, Entity &e2);
+            void resolveCubeCubeCollision(Entity &e1, Entity &e2);
             void resolveSquareCircleCollision(Entity &e1, Entity &e2);
             void resolveCircleCircleCollision(Entity &e1, Entity &e2);
     };

@@ -4,9 +4,9 @@ namespace ParteeEngine
 {
     ColliderComponent::ColliderComponent(ColliderType type) : type(type)
     {
-        if (type == ColliderType::SQUARE) 
+        if (type == ColliderType::CUBE) 
         {
-            data.square.halfExtents = Vector3(0.5f, 0.5f, 0.5f); // Default half extents
+            data.cube.halfExtents = Vector3(0.5f, 0.5f, 0.5f); // Default half extents
         } 
         else if (type == ColliderType::CIRCLE) 
         {

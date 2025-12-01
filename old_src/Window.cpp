@@ -86,11 +86,11 @@ namespace ParteeEngine
             return;
         }
 
-        // Get device context for OpenGL
-        hdc = GetDC(hwnd);
+        // // Get device context for OpenGL
+        // hdc = GetDC(hwnd);
         
-        // Set up OpenGL
-        setupOpenGL();
+        // // Set up OpenGL
+        // setupOpenGL();
     }
 
     void Window::setupOpenGL() {

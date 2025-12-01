@@ -23,11 +23,11 @@ namespace ParteeEngine
 
         switch(collider1->getType()) 
         {
-            case ColliderType::SQUARE:
+            case ColliderType::CUBE:
                 switch(collider2->getType()) 
                 {
-                    case ColliderType::SQUARE:
-                        resolveSquareSquareCollision(e1, e2);
+                    case ColliderType::CUBE:
+                        resolveCubeCubeCollision(e1, e2);
                         break;
                     case ColliderType::CIRCLE:
                         resolveSquareCircleCollision(e1, e2);
@@ -37,7 +37,7 @@ namespace ParteeEngine
             case ColliderType::CIRCLE:
                 switch(collider2->getType()) 
                 {
-                    case ColliderType::SQUARE:
+                    case ColliderType::CUBE:
                         resolveSquareCircleCollision(e2, e1);
                         break;
                     case ColliderType::CIRCLE:
@@ -48,7 +48,7 @@ namespace ParteeEngine
         }
     }
 
-    void CollisionSystem::resolveSquareSquareCollision(Entity &e1, Entity &e2) 
+    void CollisionSystem::resolveCubeCubeCollision(Entity &e1, Entity &e2) 
     {
         ColliderData& data1 = e1.getComponent<ColliderComponent>()->getData();
         ColliderData& data2 = e2.getComponent<ColliderComponent>()->getData();
@@ -57,22 +57,9 @@ namespace ParteeEngine
         TransformComponent* transform2 = e2.getComponent<TransformComponent>();
 
         if (transform1 && transform2) {
-            float x1 = transform1->position.x;
-            float y1 = transform1->position.y;
-            float x2 = transform2->position.x;
-            float y2 = transform2->position.y;
-
-            float left1 = x1 - data1.square.halfExtents.x;
-            float right1 = x1 + data1.square.halfExtents.x;
-            float top1 = y1 - data1.square.halfExtents.y;
-            float bottom1 = y1 + data1.square.halfExtents.y;
-            
-            float left2 = x2 - data2.square.halfExtents.x;
-            float right2 = x2 + data2.square.halfExtents.x;
-            float top2 = y2 - data2.square.halfExtents.y;
-            float bottom2 = y2 + data2.square.halfExtents.y;
-            
-            if (right1 > left2 && left1 < right2 && bottom1 > top2 && top1 < bottom2) {
+            if (std::abs(transform1->getPosition().x - transform2->getPosition().x) <= (data1.cube.halfExtents.x + data2.cube.halfExtents.x) &&
+                std::abs(transform1->getPosition().y - transform2->getPosition().y) <= (data1.cube.halfExtents.y + data2.cube.halfExtents.y) &&
+                std::abs(transform1->getPosition().z - transform2->getPosition().z) <= (data1.cube.halfExtents.z + data2.cube.halfExtents.z)) {
                 EventBus::getInstance().publish(CollisionEvent{e1.getID(), e2.getID()});
             }
         }
@@ -87,15 +74,15 @@ namespace ParteeEngine
         TransformComponent* transform2 = e2.getComponent<TransformComponent>();
 
         if (transform1 && transform2) {
-            float sx = transform1->position.x;
-            float sy = transform1->position.y;
-            float cx = transform2->position.x;
-            float cy = transform2->position.y;
-            
-            float left = sx - data1.square.halfExtents.x;
-            float right = sx + data1.square.halfExtents.x;
-            float top = sy - data1.square.halfExtents.y;
-            float bottom = sy + data1.square.halfExtents.y;
+            float sx = transform1->getPosition().x;
+            float sy = transform1->getPosition().y;
+            float cx = transform2->getPosition().x;
+            float cy = transform2->getPosition().y;
+
+            float left = sx - data1.cube.halfExtents.x;
+            float right = sx + data1.cube.halfExtents.x;
+            float top = sy - data1.cube.halfExtents.y;
+            float bottom = sy + data1.cube.halfExtents.y;
             
             float closestX = std::max(left, std::min(cx, right));
             float closestY = std::max(top, std::min(cy, bottom));
@@ -118,8 +105,8 @@ namespace ParteeEngine
         TransformComponent* transform2 = e2.getComponent<TransformComponent>();
 
         if (transform1 && transform2) {
-            float dx = transform2->position.x - transform1->position.x;
-            float dy = transform2->position.y - transform1->position.y;
+            float dx = transform2->getPosition().x - transform1->getPosition().x;
+            float dy = transform2->getPosition().y - transform1->getPosition().y;
             float distSquared = dx * dx + dy * dy;
             float radiusSum = data1.circle.radius + data2.circle.radius;
             

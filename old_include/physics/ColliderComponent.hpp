@@ -10,7 +10,7 @@ namespace ParteeEngine
 
     enum class ColliderType 
     {
-        SQUARE,
+        CUBE,
         CIRCLE
     };
 
@@ -18,7 +18,7 @@ namespace ParteeEngine
     {   
         struct {
             Vector3 halfExtents; // For SQUARE
-        } square;
+        } cube;
         struct {
             float radius; // For CIRCLE
         } circle;

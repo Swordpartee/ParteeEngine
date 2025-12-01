@@ -22,7 +22,7 @@ namespace ParteeEngine
         });
     }
     
-    void PhysicsComponent::update(Entity& owner, float dt)
+    void PhysicsComponent::updatePhysics(Entity& owner, float dt)
     {
         velocity += acceleration * dt;
         owner.getComponent<TransformComponent>()->translate(velocity * dt);

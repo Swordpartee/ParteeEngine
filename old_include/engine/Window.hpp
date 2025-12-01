@@ -17,7 +17,7 @@ namespace ParteeEngine {
             void swapBuffers();
 
             HWND getHWND() const;
-            HDC getHDC() const;
+            // HDC getHDC() const;
             int getWidth() const;
             int getHeight() const;
 
@@ -26,14 +26,14 @@ namespace ParteeEngine {
             const int height;
 
             HWND hwnd;
-            HDC hdc;
-            HGLRC hglrc; // OpenGL rendering context
             RenderCallback renderCallback;
+            // HDC hdc;
+            // HGLRC hglrc; // OpenGL rendering context
 
             static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
             void createWindow();
-            void setupOpenGL();
+            // void setupOpenGL();
     };
 
 } // namespace ParteeEngine

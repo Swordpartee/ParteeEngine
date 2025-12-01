@@ -86,14 +86,6 @@ namespace ParteeEngine {
         if (!hasComponent<T>()) 
         {
             addComponent<T>();
-        }
-    }
-
-    template <typename T>
-    void Entity::updateComponent(float dt)
-    {
-        auto *comp = getComponent<T>();
-        if (comp)
-            comp->update(*this, dt);
+        } 
     }
 }
