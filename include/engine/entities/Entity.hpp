@@ -37,10 +37,6 @@ namespace ParteeEngine {
         template <IsComponent T>
         const T *getComponent() const;
 
-        // Component* getComponent(ComponentCategory category);
-
-        // const Component* getComponent(ComponentCategory category) const;
-
         template <IsComponent T>
         T &ensureComponent();
 
@@ -96,8 +92,7 @@ namespace ParteeEngine {
             throw std::runtime_error("Component type already present on entity");
         }
 
-        // If Component needs to know its Entity and was constructed without it,
-        // you need a method like component->setEntity(*this); (add in Component base).
+        // If Component needs to know its Entity and was constructed without it
         T &ref = *component;
         components[typeid(T)] = std::move(component);
         componentTraitMask |= traitMask;
@@ -122,26 +117,6 @@ namespace ParteeEngine {
         }
         return nullptr;
     }
-
-    // const Component* Entity::getComponent(ComponentCategory category) const {
-    //     for (const auto& [typeIdx, compPtr] : components) {
-    //         const auto& traits = ComponentTraits<std::remove_pointer_t<decltype(compPtr.get())>>;
-    //         if ((static_cast<unsigned>(traits.categories) & static_cast<unsigned>(category)) != 0) {
-    //             return compPtr.get();
-    //         }
-    //     }
-    //     return nullptr;
-    // }
-
-    // Component* Entity::getComponent(ComponentCategory category) {
-    //     for (const auto& [typeIdx, compPtr] : components) {
-    //         const auto& traits = ComponentTraits<std::remove_pointer_t<decltype(compPtr.get())>>;
-    //         if ((static_cast<unsigned>(traits.categories) & static_cast<unsigned>(category)) != 0) {
-    //             return compPtr.get();
-    //         }
-    //     }
-    //     return nullptr;
-    // }
 
     template <IsComponent T>
     T& Entity::ensureComponent() {        
