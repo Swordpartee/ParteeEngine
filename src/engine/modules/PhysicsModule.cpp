@@ -20,6 +20,7 @@ namespace ParteeEngine {
             if (!transform) continue;
 
             Vector3 newPosition = transform->getPosition() + rigidBody->getVelocity();
+            transform->setPosition(newPosition);
         }
     }
 

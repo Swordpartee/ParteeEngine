@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.23)
 project(ParteeEngine)
 
 # Set C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Include directories
 include_directories(include)
@@ -24,7 +25,6 @@ target_link_libraries(ParteeEngine
 # Add compiler flags
 target_compile_options(ParteeEngine PRIVATE 
     -g
-    -fconcepts
 )
 
 # Set output directory

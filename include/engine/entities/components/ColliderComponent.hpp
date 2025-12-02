@@ -7,9 +7,7 @@ namespace ParteeEngine {
 
     class Vector3;
 
-    class ColliderComponent: public Component {
-    friend class Entity;
-    
+    class ColliderComponent: public Component {    
     public:
         virtual ~ColliderComponent() = default;
 
@@ -29,9 +27,9 @@ namespace ParteeEngine {
     };
 
     class BoxColliderComponent : public ColliderComponent {
+    friend class Entity;
+    
     public:
-        using ColliderComponent::ColliderComponent;
-
         Vector3 getHalfSize() const { return halfSize; }
         void setHalfSize(const Vector3& size) { halfSize = size; }
 
@@ -39,6 +37,8 @@ namespace ParteeEngine {
         void setOffset(const Vector3& off) { offset = off; }
     
     private:
+        using ColliderComponent::ColliderComponent;
+
         Vector3 halfSize{16.f, 16.f, 0.f};
         Vector3 offset{0.f, 0.f, 0.f};
     };

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <stdexcept>
+#include <optional>
+
+
 #include "Component.hpp"
 #include "TransformComponent.hpp"
 
@@ -26,14 +30,22 @@ namespace ParteeEngine {
             owner.ensureComponent<TransformComponent>();
         }
 
-        const RenderData &getRenderData() const { return renderData; }
-        void setRenderData(const RenderData &data) { renderData = data; }
+        const RenderData &getRenderData() const {
+            if (!renderData.has_value()) {
+                throw std::runtime_error("RenderData not set");
+            }
+            return *renderData;
+        };
 
     protected:
         using Component::Component;
 
     private:
-        RenderData renderData;
+        std::optional<RenderData> renderData;
+
+        void setRenderData(RenderData data) {
+            renderData = std::move(data);
+        }
     };
 
     template <>

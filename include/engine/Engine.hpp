@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <memory>
 #include <algorithm>
+#include <stdexcept>
 
 #include "modules/Module.hpp"
 #include "entities/Entity.hpp"
@@ -12,8 +13,8 @@
 namespace ParteeEngine {
 
     // Module concept
-    // template <typename T>
-    // concept IsModule = std::is_base_of_v<Module, T>;
+    template <typename T>
+    concept IsModule = std::is_base_of_v<Module, T>;
 
     struct ModuleInputs;
     struct ModuleUpdateInputs;
@@ -22,8 +23,8 @@ namespace ParteeEngine {
     public:
         Engine();
 
-        template <typename T>
-        T& addModule();
+        template <IsModule T>
+        void addModule();
 
         Entity &createEntity();
 
@@ -42,8 +43,8 @@ namespace ParteeEngine {
         void update();
     };
 
-    template <typename T>
-    T &Engine::addModule() {
+    template <IsModule T>
+    void Engine::addModule() {
         const unsigned catMask = static_cast<unsigned>(ModuleTraits<T>::categories);
 
         if (ModuleTraits<T>::unique && catMask) {
@@ -61,7 +62,6 @@ namespace ParteeEngine {
 
         modules.emplace_back(std::make_unique<T>());
         modules.back()->initialize(moduleInputs);
-        return *static_cast<T *>(modules.back().get());
-    }
+        moduleCategoryMask |= catMask;}
 
 } // namespace ParteeEngine

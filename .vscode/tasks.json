@@ -4,11 +4,11 @@
             "type": "shell",
             "label": "Build with CMake",
             "command": "cmake",
-            "args": ["--build", "build"],
+            "args": ["--build", "build", "--config", "Debug"],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
-            "problemMatcher": ["$gcc"],
+            "problemMatcher": ["$msCompile"],
             "detail": "Build with CMake"
         }
     ],

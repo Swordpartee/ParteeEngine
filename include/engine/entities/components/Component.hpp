@@ -6,9 +6,7 @@ namespace ParteeEngine {
 
     class Entity;
 
-    class Component {
-    friend class Entity;
-    
+    class Component {    
     public:
         virtual ~Component() = default;
 
@@ -19,13 +17,11 @@ namespace ParteeEngine {
         Component(Entity& owner) : owner(owner) {}
 
         Entity& owner;
-        
     };
 
     template <>
     struct ComponentTraits<Component> {
         static constexpr bool unique = false;
-        static constexpr bool isVirtual = true;
         static constexpr ComponentCategory categories = ComponentCategory::None;
     };
 

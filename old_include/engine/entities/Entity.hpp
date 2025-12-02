@@ -13,6 +13,9 @@ namespace ParteeEngine {
 
     class Entity {
 
+        template <typename T>
+        concept IsComponent = std::is_base_of_v<Component, T>;
+
         public:
             Entity(int id);
             
@@ -45,8 +48,8 @@ namespace ParteeEngine {
             Component* getComponentByType(std::type_index type);
     };
 
-    template <typename T, typename... Args>
-    T& Entity::addComponent(Args&&... args)
+    template <IsComponent T, typename... Args>
+    T &Entity::addComponent(Args &&...args)
     {
         // get the component type
         auto type = std::type_index(typeid(T));
