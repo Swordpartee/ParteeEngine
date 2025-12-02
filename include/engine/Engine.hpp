@@ -3,6 +3,7 @@
 #include <vector>
 #include <type_traits>
 #include <memory>
+#include <algorithm>
 
 #include "modules/Module.hpp"
 #include "entities/Entity.hpp"
@@ -51,7 +52,10 @@ namespace ParteeEngine {
             }
         }
 
-        if (modules.find(std::type_index(typeid(T))) != modules.end()) {
+        // Check if module type already exists
+
+        if (std::find_if(modules.begin(), modules.end(), [](const auto &mod)
+                         { return typeid(*mod) == typeid(T); }) != modules.end()) {
             throw std::runtime_error("Module type already present");
         }
 

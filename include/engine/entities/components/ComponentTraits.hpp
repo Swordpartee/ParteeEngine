@@ -16,8 +16,7 @@ namespace ParteeEngine {
     }
 
     template <typename T>
-    struct ComponentTraits
-    {
+    struct ComponentTraits {
         static constexpr bool unique = false;
         static constexpr ComponentCategory categories = ComponentCategory::None;
     };

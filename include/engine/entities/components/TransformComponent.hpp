@@ -1,23 +1,26 @@
 #pragma once
 
 #include "Component.hpp"
-#include "../../util/Vector3.hpp"
+#include "engine/math/Vector3.hpp"
 
 namespace ParteeEngine {
 
     class TransformComponent: public Component {
+    friend class Entity;
+    
     public:
-        TransformComponent(Entity& owner) : Component(owner), position(0,0,0), rotation(0,0,0) {}
-
         const Vector3& getPosition() const { return position; }
         void setPosition(const Vector3& pos) { position = pos; }
 
         const Vector3& getRotation() const { return rotation; }
         void setRotation(const Vector3& rot) { rotation = rot; }
 
+    protected:
+        using Component::Component;
+
     private:
-        Vector3 position;
-        Vector3 rotation;
+        Vector3 position = {0, 0, 0};
+        Vector3 rotation = {0, 0, 0};
     };
 
     template <>

@@ -2,6 +2,7 @@
 
 #include "../Window.hpp"
 #include "../entities/Entity.hpp"
+#include "ModuleTraits.hpp"
 #include <vector>
 
 namespace ParteeEngine {

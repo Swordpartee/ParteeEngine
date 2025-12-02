@@ -19,16 +19,18 @@ namespace ParteeEngine {
     };
 
     class RenderComponent: public Component {
-    public:
-        RenderComponent(Entity& owner) : Component(owner) {}
+    friend class RenderableFactory;
 
+    public:
         void ensureDependencies() override {
             owner.ensureComponent<TransformComponent>();
         }
 
-        const RenderData& getRenderData() const {
-            return renderData;
-        }
+        const RenderData &getRenderData() const { return renderData; }
+        void setRenderData(const RenderData &data) { renderData = data; }
+
+    protected:
+        using Component::Component;
 
     private:
         RenderData renderData;
