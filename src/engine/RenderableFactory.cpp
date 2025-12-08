@@ -9,8 +9,6 @@ namespace ParteeEngine {
 
         RenderData data;
         data.sprite.textureID = 1; // Placeholder texture ID
-        data.sprite.width = 50.0f;
-        data.sprite.height = 50.0f;
 
         entity.getComponent<RenderComponent>()->renderData = data;
 

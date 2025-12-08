@@ -11,36 +11,36 @@ namespace ParteeEngine {
     public:
         virtual ~ColliderComponent() = default;
 
-        void onAttach() override {};
         void ensureDependencies() override {
             owner.ensureComponent<TransformComponent>();
         };
 
-        bool getIsTrigger() const { return isTrigger; }
-        void setIsTrigger(bool trigger) { isTrigger = trigger; }
+        float getBoundingSphereRadius() const { return boundingSphereRadius; }
+        
 
     protected:
         using Component::Component;
+        void setBoundingSphereRadius(float radius) { boundingSphereRadius = radius; }
     
     private:
-        bool isTrigger = false;
+        float boundingSphereRadius;
     };
 
     class BoxColliderComponent : public ColliderComponent {
     friend class Entity;
-    
-    public:
-        Vector3 getHalfSize() const { return halfSize; }
-        void setHalfSize(const Vector3& size) { halfSize = size; }
 
-        Vector3 getOffset() const { return offset; }
-        void setOffset(const Vector3& off) { offset = off; }
+        void onAttach() override {
+            auto* transform = owner.getComponent<TransformComponent>();
+            Vector3 scale = transform->getScale();
+            // Assuming the box collider is axis-aligned and centered on the entity
+            Vector3 halfExtents = scale * 0.5f;
+            // Calculate bounding sphere radius as half the diagonal of the box
+            float radius = halfExtents.length();
+            setBoundingSphereRadius(radius);
+        };
     
     private:
         using ColliderComponent::ColliderComponent;
-
-        Vector3 halfSize{16.f, 16.f, 0.f};
-        Vector3 offset{0.f, 0.f, 0.f};
     };
 
     template <>

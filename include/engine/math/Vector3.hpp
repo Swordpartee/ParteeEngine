@@ -66,5 +66,29 @@ namespace ParteeEngine {
             }
             return Vector3(0, 0, 0);
         }
+
+        float lengthSquared() const {
+            return x * x + y * y + z * z;
+        }
+
+        // Component-wise multiplication
+        Vector3 componentMul(const Vector3& other) const {
+            return Vector3(x * other.x, y * other.y, z * other.z);
+        }
+
+        // Absolute values
+        Vector3 abs() const {
+            return Vector3(std::abs(x), std::abs(y), std::abs(z));
+        }
+
+        // Division operator
+        Vector3 operator/(float scalar) const {
+            return Vector3(x / scalar, y / scalar, z / scalar);
+        }
     };
+
+    // Scalar * Vector3
+    inline Vector3 operator*(float scalar, const Vector3& v) {
+        return v * scalar;
+    }
 } // namespace ParteeEngine

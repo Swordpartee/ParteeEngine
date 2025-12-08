@@ -7,11 +7,14 @@ namespace ParteeEngine {
     class Window;
 
     class RenderModule2d: public Module {
+    friend class Engine;
     public:
         void initialize(const ModuleInputs &inputs) override;
         void update(const ModuleUpdateInputs &inputs) override;
 
     private:
+        using Module::Module;
+
         Window* window;
     };
 

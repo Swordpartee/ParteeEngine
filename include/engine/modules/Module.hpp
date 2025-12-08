@@ -12,16 +12,19 @@ namespace ParteeEngine {
     };
     struct ModuleUpdateInputs {
         std::vector<Entity> &entities;
+        float deltaTime;
     };
 
     class Module {
     public:
-        Module() = default;
         virtual ~Module() = default;
 
         virtual void initialize(const ModuleInputs& inputs) = 0;
 
         virtual void update(const ModuleUpdateInputs& inputs) = 0;
+
+    protected:
+      Module() = default;
     };
 
 } // namespace ParteeEngine

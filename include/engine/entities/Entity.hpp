@@ -15,8 +15,9 @@ namespace ParteeEngine {
     concept IsComponent = std::is_base_of_v<Component, T>;
 
     class Entity {
+    friend class Engine;
+    
     public:
-        Entity() = default;
         ~Entity() = default;
 
         // Delete copy and allow move assignments
@@ -41,6 +42,8 @@ namespace ParteeEngine {
         T &ensureComponent();
 
     private:
+        Entity() = default;
+
         std::unordered_map<std::type_index, std::unique_ptr<Component>> components;
         unsigned componentTraitMask = 0;
 

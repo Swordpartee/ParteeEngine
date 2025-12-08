@@ -83,6 +83,11 @@
         "variant": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true,
+    "cmake.generator": "Visual Studio 17 2022",
+    "cmake.preferredGenerators": [
+        "Visual Studio 17 2022",
+        "Visual Studio 16 2019"
+    ],
     "launch": {
         "configurations": [],
         "compounds": []

@@ -22,12 +22,4 @@ target_link_libraries(ParteeEngine
     gdi32
 )
 
-# Add compiler flags
-target_compile_options(ParteeEngine PRIVATE 
-    -g
-)
-
-# Set output directory
-set_target_properties(ParteeEngine PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")

@@ -5,6 +5,7 @@
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
+#include <chrono>
 
 #include "modules/Module.hpp"
 #include "entities/Entity.hpp"
@@ -39,6 +40,8 @@ namespace ParteeEngine {
         unsigned moduleCategoryMask = 0;
 
         ModuleInputs moduleInputs{window};
+
+        std::chrono::steady_clock::time_point lastFrameTime;
 
         void update();
     };

@@ -37,6 +37,11 @@ namespace ParteeEngine {
             return *renderData;
         };
 
+        void onAttach() override {
+            renderData->sprite.width = owner.getComponent<TransformComponent>()->getScale().x;
+            renderData->sprite.height = owner.getComponent<TransformComponent>()->getScale().y;
+        };
+
     protected:
         using Component::Component;
 
