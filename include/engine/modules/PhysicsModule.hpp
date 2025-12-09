@@ -5,6 +5,8 @@
 
 namespace ParteeEngine {
 
+    class Entity;
+
     struct CollisionInfo {
         bool isColliding = false;
         Vector3 normal;          // Collision normal
@@ -43,7 +45,7 @@ namespace ParteeEngine {
         void calculatePhysics(Entity& entity, float dt);
 
         // Collision detection
-        void checkCollisions(std::vector<Entity>& entities);
+        void checkCollisions(std::deque<Entity>& entities);
         // CollisionInfo checkOBBCollision(const OBB& a, const OBB& b, Entity* entityA, Entity* entityB);
         
         // Build OBB from entity components

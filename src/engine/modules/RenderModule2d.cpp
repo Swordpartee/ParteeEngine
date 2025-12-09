@@ -1,11 +1,12 @@
 #include "engine/modules/RenderModule2d.hpp"
 
+#include "engine/entities/components/RenderComponent.hpp"
+#include "engine/entities/components/TransformComponent.hpp"
+#include "engine/entities/Entity.hpp"
+
 #include <GL/gl.h>
 #include <windows.h>
 #include <cmath>
-
-#include "engine/entities/components/RenderComponent.hpp"
-#include "engine/entities/components/TransformComponent.hpp"
 
 namespace ParteeEngine {
 
@@ -75,8 +76,8 @@ namespace ParteeEngine {
             const RenderData &data = renderComp->getRenderData();
             
             // Determine square size (use sprite dimensions if available, otherwise default)
-            float halfWidth = data.sprite.width > 0 ? data.sprite.width / 2.0f : 50.0f;
-            float halfHeight = data.sprite.height > 0 ? data.sprite.height / 2.0f : 50.0f;
+            float halfWidth = transformComp->getScale().x * 0.5f;
+            float halfHeight = transformComp->getScale().y * 0.5f;
             
             Vector3 normalizedNormal = normal.normalize();
             

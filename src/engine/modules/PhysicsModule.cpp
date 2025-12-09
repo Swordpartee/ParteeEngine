@@ -1,12 +1,15 @@
 #include "engine/modules/PhysicsModule.hpp"
 
-#include "engine/entities/components/RigidBodyComponent.hpp"
+#include "engine/entities/Entity.hpp"
 #include "engine/entities/components/ColliderComponent.hpp"
+#include "engine/entities/components/RigidBodyComponent.hpp"
 #include "engine/entities/components/TransformComponent.hpp"
 #include "engine/math/Vector3.hpp"
-#include <cmath>
-#include <cfloat>
+
 #include <algorithm>
+#include <cfloat>
+#include <cmath>
+#include <deque>
 
 namespace ParteeEngine {
 
@@ -15,7 +18,7 @@ namespace ParteeEngine {
     }
 
     void PhysicsModule::update(const ModuleUpdateInputs& inputs) {
-        // Claculate physics for all entities with rigidbodies
+        // Calculate physics for all entities with rigidbodies
         for (auto& entity : inputs.entities) {
             if (entity.getComponent<RigidBodyComponent>()) {
                 calculatePhysics(entity, inputs.deltaTime);
@@ -41,7 +44,26 @@ namespace ParteeEngine {
         transform->setPosition(position);
     }
 
-    void PhysicsModule::checkCollisions(std::vector<Entity>& entities) {
+    // Helper: Check if two AABBs (Axis-Aligned Bounding Boxes) intersect
+    bool checkAABBCollision(const Vector3& minA, const Vector3& maxA,
+                           const Vector3& minB, const Vector3& maxB) {
+        return (minA.x <= maxB.x && maxA.x >= minB.x) &&
+               (minA.y <= maxB.y && maxA.y >= minB.y) &&
+               (minA.z <= maxB.z && maxA.z >= minB.z);
+    }
+
+    // Helper: Get AABB bounds for a box collider
+    void getAABBBounds(Entity& entity, Vector3& outMin, Vector3& outMax) {
+        auto* transform = entity.getComponent<TransformComponent>();
+        Vector3 position = transform->getPosition();
+        Vector3 scale = transform->getScale();
+        Vector3 halfExtents = scale * 0.5f;
+        
+        outMin = position - halfExtents;
+        outMax = position + halfExtents;
+    }
+
+    void PhysicsModule::checkCollisions(std::deque<Entity>& entities) {
         // Broadphase collision detection using bounding spheres
         std::vector<std::pair<Entity*, Entity*>> potentialCollisions;
 
@@ -53,7 +75,7 @@ namespace ParteeEngine {
                 auto* colliderB = entities[j].getComponent<ColliderComponent>();
                 if (!colliderB) continue;
 
-                // Simple distance check between entity positions
+                // Broadphase: Simple distance check between entity positions
                 auto* transformA = entities[i].getComponent<TransformComponent>();
                 auto* transformB = entities[j].getComponent<TransformComponent>();
                 if (!transformA || !transformB) continue;
@@ -64,28 +86,43 @@ namespace ParteeEngine {
                 float distSq = (posA - posB).lengthSquared();
 
                 float radiusSum = colliderA->getBoundingSphereRadius() + colliderB->getBoundingSphereRadius();
-                
                 if (distSq <= radiusSum * radiusSum) {
                     potentialCollisions.emplace_back(&entities[i], &entities[j]);
-
-                    std::printf(
-                        "Checking collision between Entity %zu at (%.2f, %.2f, "
-                        "%.2f) and Entity %zu at (%.2f, %.2f, %.2f)\n",
-                        i, posA.x, posA.y, posA.z, j, posB.x, posB.y, posB.z);
-
-                    std::fflush(stdout);
                 }
             }
         }
 
-        // Narrowphase collision detection would go here (e.g., OBB vs OBB)
-        // For now, we just log potential collisions
+        // Narrowphase: Precise AABB collision detection
+        std::vector<std::pair<Entity*, Entity*>> actualCollisions;
+        
         for (const auto& pair : potentialCollisions) {
             Entity* entityA = pair.first;
             Entity* entityB = pair.second;
-            // Handle collision response (e.g., simple velocity inversion)
+
+            // Check if both are box colliders
+            auto* boxA = dynamic_cast<BoxColliderComponent*>(entityA->getComponent<ColliderComponent>());
+            auto* boxB = dynamic_cast<BoxColliderComponent*>(entityB->getComponent<ColliderComponent>());
+
+            if (boxA && boxB) {
+                Vector3 minA, maxA, minB, maxB;
+                getAABBBounds(*entityA, minA, maxA);
+                getAABBBounds(*entityB, minB, maxB);
+
+                if (checkAABBCollision(minA, maxA, minB, maxB)) {
+                    actualCollisions.push_back(pair);
+                }
+            }
+        }
+
+        // Collision response
+        for (const auto& pair : actualCollisions) {
+            Entity* entityA = pair.first;
+            Entity* entityB = pair.second;
+
+            // Handle collision response (simple velocity inversion)
             auto* rigidbodyA = entityA->getComponent<RigidBodyComponent>();
             auto* rigidbodyB = entityB->getComponent<RigidBodyComponent>();
+            
             if (rigidbodyA) {
                 Vector3 velA = rigidbodyA->getVelocity();
                 rigidbodyA->setVelocity(Vector3(-velA.x, -velA.y, -velA.z));

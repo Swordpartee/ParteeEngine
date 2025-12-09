@@ -31,6 +31,8 @@ namespace ParteeEngine {
         if (dt > 0.1f)
             dt = 0.016f;
 
+        dt = dt * 10.0f; // Speed up for testing
+
         ModuleUpdateInputs inputs{entities, dt};
         for (auto& module : modules) {
             module->update(inputs);

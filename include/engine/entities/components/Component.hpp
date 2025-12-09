@@ -1,28 +1,25 @@
 #pragma once
 
-#include "ComponentTraits.hpp"
-
 namespace ParteeEngine {
 
     class Entity;
 
-    class Component {    
+    class Component {
     public:
         virtual ~Component() = default;
 
-        virtual void onAttach() {};
-        virtual void ensureDependencies() {};
+        virtual void requireDependencies() {}
+
+        virtual void onAttach() {}
+        virtual void onDetach() {}
+        virtual void onUpdate(float dt) {}
 
     protected:
-        Component(Entity& owner) : owner(owner) {}
+        Entity* owner = nullptr;
 
-        Entity& owner;
+    private:
+        friend class Entity;
+        void setOwner(Entity* entity) { owner = entity; }
     };
 
-    template <>
-    struct ComponentTraits<Component> {
-        static constexpr bool unique = false;
-        static constexpr ComponentCategory categories = ComponentCategory::None;
-    };
-
-} // namespace ParteeEngine
+}

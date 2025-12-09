@@ -1,6 +1,7 @@
 #include "engine/RenderableFactory.hpp"
-
+#include "engine/entities/Entity.hpp"
 #include "engine/entities/components/RenderComponent.hpp"
+#include "engine/Engine.hpp"
 
 namespace ParteeEngine {
 
@@ -10,16 +11,18 @@ namespace ParteeEngine {
         RenderData data;
         data.sprite.textureID = 1; // Placeholder texture ID
 
-        entity.getComponent<RenderComponent>()->renderData = data;
+        auto* renderComp = entity.getComponent<RenderComponent>();
+        if (renderComp) {
+            renderComp->setRenderData(data);
+        }
 
         return entity;
     }
 
-    Entity& RenderableFactory::create(Engine &engine) {
+    Entity& RenderableFactory::create(Engine& engine) {
         Entity& entity = engine.createEntity();
-        entity.addComponent<RenderComponent>(std::unique_ptr<RenderComponent>(new RenderComponent(entity)));
+        entity.addComponent<RenderComponent>();
         return entity;
     }
 
-}
-        
+} // namespace ParteeEngine

@@ -1,17 +1,18 @@
 #pragma once
 
 #include "../Window.hpp"
-#include "../entities/Entity.hpp"
 #include "ModuleTraits.hpp"
-#include <vector>
+#include <deque>
 
 namespace ParteeEngine {
+
+    class Entity;
 
     struct ModuleInputs {
         Window &window;
     };
     struct ModuleUpdateInputs {
-        std::vector<Entity> &entities;
+        std::deque<Entity> &entities;
         float deltaTime;
     };
 

@@ -1,131 +1,132 @@
 #pragma once
 
-#include <memory>
-#include <typeindex>
-#include <unordered_map>
-#include <concepts>
-#include <stdexcept>
+#include "components/Component.hpp"
+#include "components/ComponentId.hpp"
 
-#include "engine/entities/components/Component.hpp"
-#include "engine/entities/components/ComponentTraits.hpp"
+#include <memory>
+#include <stdexcept>
+#include <unordered_map>
 
 namespace ParteeEngine {
 
-    template <typename T>
-    concept IsComponent = std::is_base_of_v<Component, T>;
-
     class Entity {
-    friend class Engine;
-    
     public:
+        Entity() = default;
         ~Entity() = default;
 
-        // Delete copy and allow move assignments
-        Entity(const Entity &) = delete;
-        Entity &operator=(const Entity &) = delete;
-        Entity(Entity &&) noexcept = default;
-        Entity &operator=(Entity &&) noexcept = default;
+        // Non-copyable, moveable
+        Entity(const Entity&) = delete;
+        Entity& operator=(const Entity&) = delete;
+        Entity(Entity&&) = default;
+        Entity& operator=(Entity&&) = default;
 
-        template <IsComponent T>
-        T &addComponent();
+        // Add component - takes ownership
+        template <typename T, typename... Args>
+        T& addComponent(Args&&... args) {
+            static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 
-        template <IsComponent T>
-        T &addComponent(std::unique_ptr<T> component);
+            ComponentID id = ComponentID::of<T>();
+            
+            if (components.find(id) != components.end()) {
+                throw std::runtime_error("Component already exists on entity");
+            }
 
-        template <IsComponent T>
-        T *getComponent();
+            auto component = std::make_unique<T>(std::forward<Args>(args)...);
+            T& ref = *component;
+            
+            component->setOwner(this);
+            components[id] = std::move(component);
 
-        template <IsComponent T>
-        const T *getComponent() const;
+            ref.requireDependencies();
+            
+            ref.onAttach();
+            
+            return ref;
+        }
 
-        template <IsComponent T>
-        T &ensureComponent();
+        // Get component - returns nullptr if not found
+        template <typename T> 
+        T *getComponent() {
+        static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
+
+            // First try exact type match
+            ComponentID id = ComponentID::of<T>();
+            auto it = components.find(id);
+            if (it != components.end()) {
+                return static_cast<T *>(it->second.get());
+            }
+
+            // If exact match not found, search for a derived type
+            for (auto &[key, component] : components) {
+                T *casted = dynamic_cast<T *>(component.get());
+                if (casted != nullptr) {
+                    return casted;
+                }
+            }
+
+            return nullptr;
+        }
+
+        // Get component const
+        template <typename T> 
+        const T *getComponent() const {
+            static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
+
+            // First try exact type match
+            ComponentID id = ComponentID::of<T>();
+            auto it = components.find(id);
+            if (it != components.end()) {
+                return static_cast<const T *>(it->second.get());
+            }
+
+            // If exact match not found, search for a derived type
+            for (auto &[key, component] : components) {
+                const T *casted = dynamic_cast<const T *>(component.get());
+                if (casted != nullptr) {
+                    return casted;
+                }
+            }
+
+            return nullptr;
+        }
+
+        template <typename T> 
+        void ensureComponent() {
+            if (!hasComponent<T>()) {
+                addComponent<T>();
+            }
+        }
+
+
+        // Has component
+        template <typename T>
+        bool hasComponent() const {
+            ComponentID id = ComponentID::of<T>();
+            return components.find(id) != components.end();
+        }
+
+        // Remove component
+        template <typename T>
+        void removeComponent() {
+            ComponentID id = ComponentID::of<T>();
+            auto it = components.find(id);
+            if (it != components.end()) {
+                it->second->onDetach();
+                components.erase(it);
+            }
+        }
+
+        // Update all components
+        void update(float dt) {
+            for (auto& [id, component] : components) {
+                component->onUpdate(dt);
+            }
+        }
 
     private:
-        Entity() = default;
+        std::unordered_map<ComponentID, std::unique_ptr<Component>> components;
 
-        std::unordered_map<std::type_index, std::unique_ptr<Component>> components;
-        unsigned componentTraitMask = 0;
-
+        friend class Component;
     };
 
-    template <IsComponent T>
-    T &Entity::addComponent() {
-        // Enforce unique per category
-        const unsigned traitMask = static_cast<unsigned>(ComponentTraits<T>::categories);
-
-        if (ComponentTraits<T>::unique && traitMask) {
-            if ((componentTraitMask & traitMask) != 0) {
-                throw std::runtime_error("Component category already present on entity");
-            }
-        }
-
-        if (components.find(std::type_index(typeid(T))) != components.end()) {
-            throw std::runtime_error("Component type already present on entity");
-        }
-
-        // Use Entity as intermediary to construct component
-        auto component = std::unique_ptr<T>(new T(*this));
-        T &ref = *component;
-        componentTraitMask |= traitMask;
-        components[typeid(T)] = std::move(component);
-        ref.ensureDependencies();
-
-        return ref;
-    }
-
-    template <IsComponent T>
-    T &Entity::addComponent(std::unique_ptr<T> component) {
-        if (!component)
-        {
-            throw std::runtime_error("Null component");
-        }
-
-        const unsigned traitMask = static_cast<unsigned>(ComponentTraits<T>::categories);
-
-        if (ComponentTraits<T>::unique && traitMask)
-        {
-            if ((componentTraitMask & traitMask) != 0)
-            {
-                throw std::runtime_error("Component category already present on entity");
-            }
-        }
-        if (components.find(std::type_index(typeid(T))) != components.end())
-        {
-            throw std::runtime_error("Component type already present on entity");
-        }
-
-        // If Component needs to know its Entity and was constructed without it
-        T &ref = *component;
-        components[typeid(T)] = std::move(component);
-        componentTraitMask |= traitMask;
-        ref.ensureDependencies();
-        return ref;
-    }
-
-    template <IsComponent T>
-    T* Entity::getComponent() {        
-        auto it = components.find(std::type_index(typeid(T)));
-        if (it != components.end()) {
-            return static_cast<T *>(it->second.get());
-        }
-        return nullptr;
-    }
-
-    template <IsComponent T>
-    const T *Entity::getComponent() const {        
-        auto it = components.find(std::type_index(typeid(T)));
-        if (it != components.end()) {
-            return static_cast<const T *>(it->second.get());
-        }
-        return nullptr;
-    }
-
-    template <IsComponent T>
-    T& Entity::ensureComponent() {        
-        if (auto *existing = getComponent<T>())
-            return *existing;
-        return addComponent<T>();
-    }
-
-} // namespace ParteeEngine
+}
