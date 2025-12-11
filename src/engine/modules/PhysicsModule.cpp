@@ -2,6 +2,7 @@
 
 #include "engine/entities/Entity.hpp"
 #include "engine/entities/components/ColliderComponent.hpp"
+#include "engine/entities/components/BoxColliderComponent.hpp"
 #include "engine/entities/components/RigidBodyComponent.hpp"
 #include "engine/entities/components/TransformComponent.hpp"
 #include "engine/math/Vector3.hpp"
@@ -36,31 +37,17 @@ namespace ParteeEngine {
         // Apply gravity
         Vector3 velocity = rigidbody->getVelocity();
         velocity += gravity * dt;
+        
+        // Apply friction (reduces velocity over time)
+        // float frictionCoefficient = 0.99f;  // 0-1: higher = less friction
+        // velocity *= frictionCoefficient;
+        
         rigidbody->setVelocity(velocity);
 
         // Update position based on velocity
         Vector3 position = transform->getPosition();
         position += velocity * dt;
         transform->setPosition(position);
-    }
-
-    // Helper: Check if two AABBs (Axis-Aligned Bounding Boxes) intersect
-    bool checkAABBCollision(const Vector3& minA, const Vector3& maxA,
-                           const Vector3& minB, const Vector3& maxB) {
-        return (minA.x <= maxB.x && maxA.x >= minB.x) &&
-               (minA.y <= maxB.y && maxA.y >= minB.y) &&
-               (minA.z <= maxB.z && maxA.z >= minB.z);
-    }
-
-    // Helper: Get AABB bounds for a box collider
-    void getAABBBounds(Entity& entity, Vector3& outMin, Vector3& outMax) {
-        auto* transform = entity.getComponent<TransformComponent>();
-        Vector3 position = transform->getPosition();
-        Vector3 scale = transform->getScale();
-        Vector3 halfExtents = scale * 0.5f;
-        
-        outMin = position - halfExtents;
-        outMax = position + halfExtents;
     }
 
     void PhysicsModule::checkCollisions(std::deque<Entity>& entities) {
@@ -92,46 +79,132 @@ namespace ParteeEngine {
             }
         }
 
-        // Narrowphase: Precise AABB collision detection
-        std::vector<std::pair<Entity*, Entity*>> actualCollisions;
-        
-        for (const auto& pair : potentialCollisions) {
-            Entity* entityA = pair.first;
-            Entity* entityB = pair.second;
+        // Narrowphase + resolution
+        for (auto &pair : potentialCollisions) {
+            auto *boxA = dynamic_cast<BoxColliderComponent *>(pair.first->getComponent<ColliderComponent>());
+            auto *boxB = dynamic_cast<BoxColliderComponent *>(pair.second->getComponent<ColliderComponent>());
+            
+            if (!boxA || !boxB) continue;
 
-            // Check if both are box colliders
-            auto* boxA = dynamic_cast<BoxColliderComponent*>(entityA->getComponent<ColliderComponent>());
-            auto* boxB = dynamic_cast<BoxColliderComponent*>(entityB->getComponent<ColliderComponent>());
+            OBB obbA = boxA->getOBB();
+            OBB obbB = boxB->getOBB();
 
-            if (boxA && boxB) {
-                Vector3 minA, maxA, minB, maxB;
-                getAABBBounds(*entityA, minA, maxA);
-                getAABBBounds(*entityB, minB, maxB);
-
-                if (checkAABBCollision(minA, maxA, minB, maxB)) {
-                    actualCollisions.push_back(pair);
+            CollisionManifold m = computeOBBManifold(obbA, obbB);
+            if (!m.colliding)
+                continue;
+            
+            // Positional correction (only for dynamic objects with RigidBody)
+            auto *rbA = pair.first->getComponent<RigidBodyComponent>();
+            auto *rbB = pair.second->getComponent<RigidBodyComponent>();
+            
+            if (rbA || rbB) {
+                const float kSlop = 0.001f;
+                Vector3 correction = m.normal * (m.penetration - kSlop);
+                
+                auto *trA = pair.first->getComponent<TransformComponent>();
+                auto *trB = pair.second->getComponent<TransformComponent>();
+                
+                // Apply correction proportionally based on which objects have physics
+                if (rbA && rbB) {
+                    // Both dynamic: split correction 50/50
+                    trA->setPosition(trA->getPosition() - correction * 0.5f);
+                    trB->setPosition(trB->getPosition() + correction * 0.5f);
+                } else if (rbA) {
+                    // Only A dynamic: apply full correction to A
+                    trA->setPosition(trA->getPosition() - correction);
+                } else if (rbB) {
+                    // Only B dynamic: apply full correction to B
+                    trB->setPosition(trB->getPosition() + correction);
                 }
             }
+
+            // Impulse resolution (equal mass assumption)
+            if (rbA || rbB) {
+                Vector3 va = rbA ? rbA->getVelocity() : Vector3{};
+                Vector3 vb = rbB ? rbB->getVelocity() : Vector3{};
+                Vector3 relVel = vb - va;
+
+                float velAlongNormal = relVel.dot(m.normal);
+                if (velAlongNormal > 0.f)
+                    continue;
+
+                float restitution = 0.5f;
+                float j = -(1.f + restitution) * velAlongNormal;
+                float invMassA = rbA ? 1.f : 0.f;
+                float invMassB = rbB ? 1.f : 0.f;
+                float invMassSum = invMassA + invMassB;
+                if (invMassSum <= 0.f)
+                    continue;
+                j /= invMassSum;
+
+                Vector3 impulse = m.normal * j;
+                if (rbA)
+                    rbA->setVelocity(va - impulse * invMassA);
+                if (rbB)
+                    rbB->setVelocity(vb + impulse * invMassB);
+            }
         }
+    }
 
-        // Collision response
-        for (const auto& pair : actualCollisions) {
-            Entity* entityA = pair.first;
-            Entity* entityB = pair.second;
+    CollisionManifold PhysicsModule::computeOBBManifold(const OBB &a, const OBB &b) const {
+        CollisionManifold m;
+        Vector3 delta = b.center - a.center;
 
-            // Handle collision response (simple velocity inversion)
-            auto* rigidbodyA = entityA->getComponent<RigidBodyComponent>();
-            auto* rigidbodyB = entityB->getComponent<RigidBodyComponent>();
+        printf("=== OBB Collision Check ===\n");
+        printf("A center: (%.1f, %.1f, %.1f), halfExtents: (%.1f, %.1f, %.1f)\n",
+               a.center.x, a.center.y, a.center.z,
+               a.halfExtents.x, a.halfExtents.y, a.halfExtents.z);
+        printf("B center: (%.1f, %.1f, %.1f), halfExtents: (%.1f, %.1f, %.1f)\n",
+               b.center.x, b.center.y, b.center.z,
+               b.halfExtents.x, b.halfExtents.y, b.halfExtents.z);
+        printf("Delta: (%.1f, %.1f, %.1f)\n", delta.x, delta.y, delta.z);
+
+        // 6 candidate axes (3 from each box)
+        Vector3 axes[6] = {a.axes[0], a.axes[1], a.axes[2],
+                           b.axes[0], b.axes[1], b.axes[2]};
+
+        float minOverlap = (std::numeric_limits<float>::max)();
+        Vector3 minAxis{};
+
+        for (int i = 0; i < 6; ++i) {
+            Vector3 axis = axes[i].normalized();
+            float projA = projectExtent(a, axis);
+            float projB = projectExtent(b, axis);
             
-            if (rigidbodyA) {
-                Vector3 velA = rigidbodyA->getVelocity();
-                rigidbodyA->setVelocity(Vector3(-velA.x, -velA.y, -velA.z));
+            // Skip degenerate axes where both OBBs have zero extent
+            // (2D collision detection - boxes have zero thickness in Z)
+            if (projA < 0.0001f && projB < 0.0001f) {
+                printf("Axis %d: SKIPPED (degenerate - 2D box)\n", i);
+                continue;
             }
-            if (rigidbodyB) {
-                Vector3 velB = rigidbodyB->getVelocity();
-                rigidbodyB->setVelocity(Vector3(-velB.x, -velB.y, -velB.z));
+            
+            float centerDist = std::abs(axis.dot(delta));
+            float overlap = projA + projB - centerDist;
+            printf("Axis %d: projA=%.2f, projB=%.2f, centerDist=%.2f, overlap=%.2f\n",
+                   i, projA, projB, centerDist, overlap);
+            if (overlap <= 0.f) {
+                printf(">>> SEPARATING AXIS FOUND at axis %d <<<\n\n", i);
+                m.colliding = false;
+                return m; // separating axis found
+            }
+            if (overlap < minOverlap) {
+                minOverlap = overlap;
+                // Ensure normal points from A to B
+                minAxis = (axis.dot(delta) < 0.f) ? -axis : axis;
             }
         }
+
+        printf(">>> COLLISION DETECTED! penetration=%.2f <<<\n\n", minOverlap);
+        m.colliding = true;
+        m.normal = minAxis;
+        m.penetration = minOverlap;
+        return m;
+    }
+
+    float PhysicsModule::projectExtent(const OBB &obb, const Vector3 &axis) const {
+        return obb.halfExtents.x * std::abs(axis.dot(obb.axes[0])) +
+               obb.halfExtents.y * std::abs(axis.dot(obb.axes[1])) +
+               obb.halfExtents.z * std::abs(axis.dot(obb.axes[2]));
     }
 
 } // namespace ParteeEngine

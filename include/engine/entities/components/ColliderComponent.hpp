@@ -17,17 +17,4 @@ namespace ParteeEngine {
         virtual float getBoundingSphereRadius() const = 0;
     };
 
-    class BoxColliderComponent : public ColliderComponent {
-    public:
-
-        float getBoundingSphereRadius() const override {
-            auto transform = owner->getComponent<TransformComponent>();
-            auto halfExtends = transform->getScale() * 0.5f;
-            float radius = halfExtends.length();
-            return radius;
-            // return (owner->getComponent<TransformComponent>()->getScale() * 0.5f).length();
-        }
-        
-    };
-
 } // namespace ParteeEngine

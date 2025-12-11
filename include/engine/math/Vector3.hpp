@@ -42,6 +42,10 @@ namespace ParteeEngine {
             z *= scalar;
             return *this;
         }
+
+        Vector3 operator-() const {
+            return Vector3(-x, -y, -z);
+        }
         
         float dot(const Vector3& other) const {
             return x * other.x + y * other.y + z * other.z;
@@ -61,10 +65,14 @@ namespace ParteeEngine {
         
         Vector3 normalize() const {
             float len = length();
-            if (len > 0.0f) {
-                return Vector3(x / len, y / len, z / len);
-            }
-            return Vector3(0, 0, 0);
+            if (len == 0) return Vector3(0, 0, 0);
+            return *this / len;
+        }
+
+        Vector3 normalized() const {
+            float len = length();
+            if (len == 0) return Vector3(0, 0, 0);
+            return Vector3(x / len, y / len, z / len);
         }
 
         float lengthSquared() const {

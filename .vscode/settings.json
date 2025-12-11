@@ -94,5 +94,6 @@
     },
     "typescript.suggest.autoImports": false,
     "editor.codeLens": false,
+    "editor.formatOnSave": false,
     "C_Cpp.dimInactiveRegions": false
 }
