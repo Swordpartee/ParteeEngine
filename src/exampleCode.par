@@ -1,0 +1,85 @@
+use "weapons.par"
+
+add_module(PhysicsModule)
+add_module(Render2dModule)
+add_module(InputModule)
+
+player = Entity.create()
+player.add(RenderComponent, PhysicsComponent, ColliderComponent)
+
+enemies = []
+
+for i in range(5)
+    spawnEnemy({i * 10, 0, 0})
+
+end
+
+for enemy in enemies
+    on collision(player, enemy)
+        enemy.health -= calculateDamage(10, 1.5)
+        if enemy.health <= 0
+            enemy.destroy()
+        elif enemy.health < 50
+            enemy.color = (255, 0, 0)
+        else
+            enemy.color = (255, 255, 255)
+
+        end
+    end
+end
+
+update
+    if Input.is_key_pressed(SPACE)
+        spawnEnemy({0, 0, 0})
+    end
+
+end 
+
+update
+    if Input.is_button_pressed(LEFT)
+        player.transform.position.x -= DELTA_TIME
+    end
+    if Input.is_button_pressed(RIGHT)
+        player.transform.position.x += DELTA_TIME
+    end
+
+    player.transform.position.x = max(0, min(Renderer.width, player.transform.position.x))
+
+    color = cos(player.transform.position.x * 0.1) % 1 * random(-255, 255)
+    color = abs(color)
+    player.color.r = color
+
+end
+
+update
+    i = 0
+    while i < enemies.length and not enemies.length = 0
+        i += 1
+        if enemies[i].transform.position.x > 100
+            continue
+        end
+        enemies[i].transform.position.x += 0.5
+
+    end
+end
+
+function spawnEnemy(position)
+    enemy = Entity.create()
+    enemy.add(RenderComponent, PhysicsComponent, ColliderComponent)
+    enemy.transform.position = position
+    enemy.health = 100
+    enemies.append(enemy)
+
+    print("Spawned enemy at ", enemy.transform.position)
+
+end
+
+function calculateDamage(base, multiplier)
+    return base * multiplier
+
+end
+
+on exit
+    print("Exiting game, cleaning up resources.")
+
+end
