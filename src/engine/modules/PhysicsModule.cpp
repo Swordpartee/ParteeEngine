@@ -35,19 +35,10 @@ namespace ParteeEngine {
         auto* transform = entity.getComponent<TransformComponent>();
 
         // Apply gravity
-        Vector3 velocity = rigidbody->getVelocity();
-        velocity += gravity * dt;
-        
-        // Apply friction (reduces velocity over time)
-        // float frictionCoefficient = 0.99f;  // 0-1: higher = less friction
-        // velocity *= frictionCoefficient;
-        
-        rigidbody->setVelocity(velocity);
+        rigidbody->getVelocity() += gravity * dt;
 
         // Update position based on velocity
-        Vector3 position = transform->getPosition();
-        position += velocity * dt;
-        transform->setPosition(position);
+        transform->getPosition() += rigidbody->getVelocity() * dt;
     }
 
     void PhysicsModule::checkCollisions(std::deque<Entity>& entities) {
@@ -150,15 +141,6 @@ namespace ParteeEngine {
         CollisionManifold m;
         Vector3 delta = b.center - a.center;
 
-        printf("=== OBB Collision Check ===\n");
-        printf("A center: (%.1f, %.1f, %.1f), halfExtents: (%.1f, %.1f, %.1f)\n",
-               a.center.x, a.center.y, a.center.z,
-               a.halfExtents.x, a.halfExtents.y, a.halfExtents.z);
-        printf("B center: (%.1f, %.1f, %.1f), halfExtents: (%.1f, %.1f, %.1f)\n",
-               b.center.x, b.center.y, b.center.z,
-               b.halfExtents.x, b.halfExtents.y, b.halfExtents.z);
-        printf("Delta: (%.1f, %.1f, %.1f)\n", delta.x, delta.y, delta.z);
-
         // 6 candidate axes (3 from each box)
         Vector3 axes[6] = {a.axes[0], a.axes[1], a.axes[2],
                            b.axes[0], b.axes[1], b.axes[2]};
@@ -191,7 +173,6 @@ namespace ParteeEngine {
             }
         }
 
-        printf(">>> COLLISION DETECTED! penetration=%.2f <<<\n\n", minOverlap);
         m.colliding = true;
         m.normal = minAxis;
         m.penetration = minOverlap;

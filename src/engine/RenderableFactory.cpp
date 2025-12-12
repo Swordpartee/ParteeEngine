@@ -11,10 +11,18 @@ namespace ParteeEngine {
         RenderData data;
         data.sprite.textureID = 1; // Placeholder texture ID
 
-        auto* renderComp = entity.getComponent<RenderComponent>();
-        if (renderComp) {
-            renderComp->setRenderData(data);
-        }
+        entity.getComponent<RenderComponent>()->setRenderData(data);
+
+        return entity;
+    }
+
+    Entity& RenderableFactory::createCube(Engine& engine) {
+        Entity& entity = create(engine);
+
+        RenderData data;
+        data.mesh;
+
+        entity.getComponent<RenderComponent>()->setRenderData(data);
 
         return entity;
     }

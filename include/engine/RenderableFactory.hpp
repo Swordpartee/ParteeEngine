@@ -11,6 +11,7 @@ namespace ParteeEngine {
     class RenderableFactory {
     public:
         static Entity& createSquare(Engine& engine);
+        static Entity& createCube(Engine& engine);
 
     private:
         static Entity& create(Engine& engine);

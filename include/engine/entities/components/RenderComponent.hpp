@@ -11,8 +11,8 @@ namespace ParteeEngine {
     struct RenderData {
         TransformComponent transform;
         struct Mesh {
-            // Mesh data
-            // TODO: Define mesh structure
+            unsigned int vaoID = 0;
+            unsigned int vertexCount = 0;
         } mesh;
 
         struct Sprite {

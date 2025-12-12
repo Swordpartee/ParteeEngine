@@ -11,6 +11,7 @@ namespace ParteeEngine {
         float getMass() const { return mass; }
         void setMass(float m) { mass = m; }
 
+        Vector3& getVelocity() { return velocity; }
         const Vector3& getVelocity() const { return velocity; }
         void setVelocity(const Vector3& vel) { velocity = vel; }
 
