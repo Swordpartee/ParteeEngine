@@ -1,9 +1,7 @@
 #pragma once
 
-
 #include "modules/Module.hpp"
 #include "engine/entities/Entity.hpp"
-#include "Window.hpp"
 
 #include <deque>
 #include <type_traits>
@@ -25,35 +23,33 @@ namespace ParteeEngine {
     public:
         Engine();
 
-        template <IsModule T>
-        void addModule();
+        template <IsModule T, typename... Args>
+        void addModule(Args&&... args);
 
         Entity& createEntity();
 
         void run();   
 
     private:
-        Window window;
-
         std::vector<std::unique_ptr<Module>> modules;
         std::deque<Entity> entities;
 
-        ModuleInputs moduleInputs{window};
+        ModuleInputs moduleInputs{};
 
         std::chrono::steady_clock::time_point lastFrameTime;
 
         void update();
     };
 
-    template <IsModule T>
-    void Engine::addModule() {
+    template <IsModule T, typename... Args>
+    void Engine::addModule(Args&&... args) {
         // Check if module type already exists
         if (std::find_if(modules.begin(), modules.end(), [](const auto &mod)
                          { return typeid(*mod) == typeid(T); }) != modules.end()) {
             throw std::runtime_error("Module type already present");
         }
 
-        modules.emplace_back(std::make_unique<T>());
+        modules.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
         modules.back()->initialize(moduleInputs);
     }
 

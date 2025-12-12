@@ -13,7 +13,7 @@ namespace ParteeEngine {
     struct RenderData;
 
     void RenderModule2d::initialize(const ModuleInputs &inputs) {
-        window = &inputs.window;
+        window.show();
 
         PIXELFORMATDESCRIPTOR pfd = {
             sizeof(PIXELFORMATDESCRIPTOR),
@@ -26,7 +26,7 @@ namespace ParteeEngine {
             8,  // Stencil buffer
             0, PFD_MAIN_PLANE, 0, 0, 0, 0};
 
-        HDC hdc = window->getHDC();
+        HDC hdc = window.getHDC();
         int pixelFormat = ChoosePixelFormat(hdc, &pfd);
         SetPixelFormat(hdc, pixelFormat, &pfd);
 
@@ -35,7 +35,7 @@ namespace ParteeEngine {
 
         // Setup viewport
         RECT rect;
-        GetClientRect(window->getHWND(), &rect);
+        GetClientRect(window.getHWND(), &rect);
         glViewport(0, 0, rect.right, rect.bottom);
 
         // Setup 2D orthographic projection with sub-pixel precision
@@ -55,6 +55,10 @@ namespace ParteeEngine {
     }
 
     void RenderModule2d::update(const ModuleUpdateInputs &inputs) {
+        if (!window.processMessages()) {
+            return;
+        }
+
         // Clear screen
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -130,7 +134,7 @@ namespace ParteeEngine {
         }
 
         // Swap buffers (show what we drew)
-        SwapBuffers(window->getHDC());
+        SwapBuffers(window.getHDC());
     }
 
 } // namespace ParteeEngine

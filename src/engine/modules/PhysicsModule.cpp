@@ -174,14 +174,11 @@ namespace ParteeEngine {
             // Skip degenerate axes where both OBBs have zero extent
             // (2D collision detection - boxes have zero thickness in Z)
             if (projA < 0.0001f && projB < 0.0001f) {
-                printf("Axis %d: SKIPPED (degenerate - 2D box)\n", i);
                 continue;
             }
             
             float centerDist = std::abs(axis.dot(delta));
             float overlap = projA + projB - centerDist;
-            printf("Axis %d: projA=%.2f, projB=%.2f, centerDist=%.2f, overlap=%.2f\n",
-                   i, projA, projB, centerDist, overlap);
             if (overlap <= 0.f) {
                 printf(">>> SEPARATING AXIS FOUND at axis %d <<<\n\n", i);
                 m.colliding = false;

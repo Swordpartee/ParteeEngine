@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Window.hpp"
 #include "ModuleTraits.hpp"
 #include <deque>
 
@@ -9,7 +8,7 @@ namespace ParteeEngine {
     class Entity;
 
     struct ModuleInputs {
-        Window &window;
+
     };
     struct ModuleUpdateInputs {
         std::deque<Entity> &entities;

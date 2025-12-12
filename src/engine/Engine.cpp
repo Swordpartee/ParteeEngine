@@ -2,7 +2,7 @@
 
 namespace ParteeEngine {
 
-    Engine::Engine() : window(800, 600) {}
+    Engine::Engine() {}
 
     Entity& Engine::createEntity() {
         // entities.emplace_back(*this);
@@ -12,9 +12,16 @@ namespace ParteeEngine {
     }
 
     void Engine::run() {
-        window.show();
+        // Initialize all modules
+        ModuleInputs initInputs{};
+        for (auto& module : modules) {
+            module->initialize(initInputs);
+        }
 
-        while (window.processMessages()) {
+        // Main loop
+        lastFrameTime = std::chrono::steady_clock::now();
+        bool running = true;
+        while (running) {
             update();
         }
     }
@@ -27,10 +34,7 @@ namespace ParteeEngine {
         lastFrameTime = currentTime;
 
         float dt = delta.count();
-        // Clamp dt to avoid huge jumps (e.g., during debugging)
-        if (dt > 0.1f)
-            dt = 0.016f;
-
+        
         dt = dt * 5.0f; // Speed up for testing
 
         ModuleUpdateInputs inputs{entities, dt};

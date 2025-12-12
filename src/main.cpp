@@ -10,7 +10,7 @@ int main() {
 
     ParteeEngine::Engine engine;
 
-    engine.addModule<ParteeEngine::RenderModule2d>();
+    engine.addModule<ParteeEngine::RenderModule2d, int, int>(800, 600);
     engine.addModule<ParteeEngine::PhysicsModule>();
 
     ParteeEngine::Entity& entity = ParteeEngine::RenderableFactory::createSquare(engine);
@@ -18,7 +18,7 @@ int main() {
     entity.addComponent<ParteeEngine::BoxColliderComponent>();
 
     entity.getComponent<ParteeEngine::TransformComponent>()->setPosition({200.0f, 150.0f, 0.0f});
-    entity.getComponent<ParteeEngine::TransformComponent>()->setScale({50.0f, 50.0f, 0.0f});
+    entity.getComponent<ParteeEngine::TransformComponent>()->setScale({50.0f, 50.0f, 5.0f});
 
     entity.getComponent<ParteeEngine::RigidBodyComponent>()->setVelocity({10.0f, 0.0f, 0.0f});
 
@@ -26,7 +26,16 @@ int main() {
     entity2.addComponent<ParteeEngine::BoxColliderComponent>();
 
     entity2.getComponent<ParteeEngine::TransformComponent>()->setPosition({400.0f, 500.0f, 0.0f});
-    entity2.getComponent<ParteeEngine::TransformComponent>()->setScale({800.0f, 50.0f, 0.0f});
+    entity2.getComponent<ParteeEngine::TransformComponent>()->setScale({800.0f, 20.0f, 5.0f});
+
+    ParteeEngine::Entity &entity3 = ParteeEngine::RenderableFactory::createSquare(engine);
+    entity3.addComponent<ParteeEngine::RigidBodyComponent>();
+    entity3.addComponent<ParteeEngine::BoxColliderComponent>();
+
+    entity3.getComponent<ParteeEngine::TransformComponent>()->setPosition({500.0f, 150.0f, 0.0f});
+    entity3.getComponent<ParteeEngine::TransformComponent>()->setScale({50.0f, 50.0f, 5.0f});
+
+    entity3.getComponent<ParteeEngine::RigidBodyComponent>()->setVelocity({-20.0f, 0.0f, 0.0f});
 
     engine.run();
 

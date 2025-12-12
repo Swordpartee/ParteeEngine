@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.hpp"
+#include "engine/Window.hpp"
 
 namespace ParteeEngine {
 
@@ -12,10 +13,9 @@ namespace ParteeEngine {
         void initialize(const ModuleInputs &inputs) override;
         void update(const ModuleUpdateInputs &inputs) override;
 
-    private:
-        using Module::Module;
+        RenderModule2d(int width, int height) : Module(), window(width, height) {};
 
-        Window* window;
+        Window window;
     };
 
     // Specialize trait
