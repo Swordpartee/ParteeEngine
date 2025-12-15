@@ -1,4 +1,5 @@
 #include "interpreter/Lexer.hpp"
+
 #include <cctype>
 #include <vector>
 
@@ -29,7 +30,6 @@ namespace ParteeEngine {
         {"true", TokenType::KW_True},
         {"false", TokenType::KW_False},
         {"null", TokenType::KW_Null},
-        {"add_module", TokenType::KW_Add_Module},
         {"print", TokenType::KW_Print},
         {"exit", TokenType::KW_Exit},
     };
@@ -244,7 +244,7 @@ namespace ParteeEngine {
     Token Lexer::getNextToken() {
         skipWhitespace();
 
-        if (peek() == '#') {
+        while (peek() == '#') {
             skipComment();
             skipWhitespace();
         }

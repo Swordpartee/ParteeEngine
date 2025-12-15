@@ -7,8 +7,12 @@
 #include "engine/RenderableFactory.hpp"
 
 #include "interpreter/Lexer.hpp"
+#include "interpreter/Parser.hpp"
 #include "interpreter/ScriptLoader.hpp"
+#include "interpreter/AST.hpp"
+
 #include <filesystem>
+#include <iostream>
 
 boolean runEngine() {
     using namespace ParteeEngine;
@@ -51,19 +55,21 @@ boolean lexerTest() {
 
     Lexer lexer(ScriptLoader::loadScript("exampleCode.par"));
 
-    while (true) {
-        Token token = lexer.getNextToken();
-        std::printf("Token: Type=%s, Value='%s', Line=%d, Column=%d\n",
-                   ParteeEngine::tokenTypeToString(token.type),
-                   token.value.c_str(),
-                   token.line,
-                   token.column);
+    auto tokens = lexer.tokenize();
 
-        if (token.type == TokenType::EndOfFile) {
-            break;
-        }
+    for (const auto &token : tokens) {
+        std::cout << "Token: " << tokenTypeToString(token.type)
+                  << " Value: \"" << token.value << "\""
+                  << " Line: " << token.line
+                  << " Column: " << token.column << "\n";
     }
 
+    Parser parser;
+
+    ParseResult parseResult = parser.parseExpression(tokens);
+
+    printAST(parseResult.expr);
+    
     return 0;
 
 }

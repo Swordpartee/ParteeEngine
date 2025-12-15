@@ -37,7 +37,6 @@ namespace ParteeEngine {
         KW_True,
         KW_False,
         KW_Null,
-        KW_Add_Module,
         KW_Print,
         KW_Exit,
         
@@ -124,7 +123,6 @@ namespace ParteeEngine {
             case TokenType::KW_True: return "KW_True";
             case TokenType::KW_False: return "KW_False";
             case TokenType::KW_Null: return "KW_Null";
-            case TokenType::KW_Add_Module: return "KW_Add_Module";
             case TokenType::KW_Print: return "KW_Print";
             case TokenType::KW_Exit: return "KW_Exit";
 
