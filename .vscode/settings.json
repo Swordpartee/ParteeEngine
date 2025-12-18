@@ -95,5 +95,7 @@
     "typescript.suggest.autoImports": false,
     "editor.codeLens": false,
     "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
     "C_Cpp.dimInactiveRegions": false
 }

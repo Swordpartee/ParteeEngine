@@ -23,3 +23,4 @@ target_link_libraries(ParteeEngine
 )
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
+add_compile_options(/W4 /permissive- /WX)

@@ -9,18 +9,16 @@ namespace ParteeEngine {
         {"use", TokenType::KW_Use},
         {"for", TokenType::KW_For},
         {"in", TokenType::KW_In},
-        {"range", TokenType::KW_Range},
         {"if", TokenType::KW_If},
         {"else", TokenType::KW_Else},
         {"elif", TokenType::KW_Else_If},
         {"end", TokenType::KW_End},
-        {"update", TokenType::KW_Update},
         {"function", TokenType::KW_Function},
-        {"return", TokenType::KW_Return},
         {"while", TokenType::KW_While},
         {"continue", TokenType::KW_Continue},
         {"break", TokenType::KW_Break},
-        {"match", TokenType::KW_Match},
+        {"return", TokenType::KW_Return},
+        {"match", TokenType::KW_Switch},
         {"case", TokenType::KW_Case},
         {"default", TokenType::KW_Default},
         {"on", TokenType::KW_On},
@@ -29,9 +27,7 @@ namespace ParteeEngine {
         {"not", TokenType::KW_Not},
         {"true", TokenType::KW_True},
         {"false", TokenType::KW_False},
-        {"null", TokenType::KW_Null},
-        {"print", TokenType::KW_Print},
-        {"exit", TokenType::KW_Exit},
+        {"null", TokenType::KW_Null}
     };
 
     char Lexer::peek() const {
@@ -102,6 +98,11 @@ namespace ParteeEngine {
         int startLine = line;
         int startColumn = column;
         std::string value;
+
+        // Handle negative numbers
+        if (peek() == '-') {
+            value += get(); // consume '-'
+        }
 
         // Integer part
         while (isdigit(peek())) {
@@ -257,7 +258,7 @@ namespace ParteeEngine {
             return scanString();
         }
 
-        if (isdigit(peek())) {
+        if (isdigit(peek()) || (peek() == '-' && isdigit(source[position + 1]))) {
             return scanNumber();
         }
 

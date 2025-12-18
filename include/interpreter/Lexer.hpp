@@ -16,18 +16,16 @@ namespace ParteeEngine {
         KW_Use,
         KW_For,
         KW_In,
-        KW_Range,
         KW_If,
         KW_Else,
         KW_Else_If,
         KW_End,
-        KW_Update,
         KW_Function,
-        KW_Return,
         KW_While,
         KW_Continue,
         KW_Break,
-        KW_Match,
+        KW_Return,
+        KW_Switch,
         KW_Case,
         KW_Default,
         KW_On,
@@ -37,8 +35,6 @@ namespace ParteeEngine {
         KW_True,
         KW_False,
         KW_Null,
-        KW_Print,
-        KW_Exit,
         
         // Operators
         OP_Assign,          // =
@@ -102,18 +98,16 @@ namespace ParteeEngine {
             case TokenType::KW_Use: return "KW_Use";
             case TokenType::KW_For: return "KW_For";
             case TokenType::KW_In: return "KW_In";
-            case TokenType::KW_Range: return "KW_Range";
             case TokenType::KW_If: return "KW_If";
             case TokenType::KW_Else: return "KW_Else";
             case TokenType::KW_Else_If: return "KW_Elif";
             case TokenType::KW_End: return "KW_End";
-            case TokenType::KW_Update: return "KW_Update";
             case TokenType::KW_Function: return "KW_Function";
-            case TokenType::KW_Return: return "KW_Return";
             case TokenType::KW_While: return "KW_While";
             case TokenType::KW_Continue: return "KW_Continue";
             case TokenType::KW_Break: return "KW_Break";
-            case TokenType::KW_Match: return "KW_Match";
+            case TokenType::KW_Return: return "KW_Return";
+            case TokenType::KW_Switch: return "KW_Switch";
             case TokenType::KW_Case: return "KW_Case";
             case TokenType::KW_Default: return "KW_Default";
             case TokenType::KW_On: return "KW_On";
@@ -123,8 +117,6 @@ namespace ParteeEngine {
             case TokenType::KW_True: return "KW_True";
             case TokenType::KW_False: return "KW_False";
             case TokenType::KW_Null: return "KW_Null";
-            case TokenType::KW_Print: return "KW_Print";
-            case TokenType::KW_Exit: return "KW_Exit";
 
             // Operators
             case TokenType::OP_Assign: return "OP_Assign";

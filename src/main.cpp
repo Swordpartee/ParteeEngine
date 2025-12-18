@@ -57,18 +57,19 @@ boolean lexerTest() {
 
     auto tokens = lexer.tokenize();
 
-    for (const auto &token : tokens) {
-        std::cout << "Token: " << tokenTypeToString(token.type)
-                  << " Value: \"" << token.value << "\""
-                  << " Line: " << token.line
-                  << " Column: " << token.column << "\n";
-    }
+    // for (const auto &token : tokens) {
+    //     std::cout << "Token: " << tokenTypeToString(token.type)
+    //               << " Value: \"" << token.value << "\""
+    //               << " Line: " << token.line
+    //               << " Column: " << token.column << "\n";
+    // }
 
     Parser parser;
 
-    ParseResult parseResult = parser.parseExpression(tokens);
+    ParseResult parseResult = parser.parse(tokens);
 
-    printAST(parseResult.expr);
+    if (parseResult.ok)
+        printAST(parseResult.expr);
     
     return 0;
 
