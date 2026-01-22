@@ -5,6 +5,7 @@
 #include "engine/entities/components/RigidBodyComponent.hpp"
 #include "engine/entities/components/BoxColliderComponent.hpp"
 #include "engine/RenderableFactory.hpp"
+#include "engine/input/InputSystem.hpp"
 
 #include "interpreter/Lexer.hpp"
 #include "interpreter/Parser.hpp"
@@ -77,6 +78,6 @@ boolean lexerTest() {
     
 
 int main() {
-    // return runEngine();
-    return lexerTest();
+    return runEngine();
+    // return lexerTest();
 }

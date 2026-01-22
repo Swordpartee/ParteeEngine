@@ -1,5 +1,12 @@
 #include "engine/Engine.hpp"
 
+#include "engine/input/InputSystem.hpp"
+#include "engine/input/devices/Keyboard.hpp"
+#include "engine/input/devices/Mouse.hpp"
+
+#include <memory>
+#include <iostream>
+
 namespace ParteeEngine {
 
     Engine::Engine() {}
@@ -18,9 +25,12 @@ namespace ParteeEngine {
             module->initialize(initInputs);
         }
 
+        InputSystem::registerDevice(std::make_unique<Keyboard>());
+        InputSystem::registerDevice(std::make_unique<Mouse>());
+
         // Main loop
         lastFrameTime = std::chrono::steady_clock::now();
-        bool running = true;
+        running = true;
         while (running) {
             update();
         }
@@ -41,5 +51,14 @@ namespace ParteeEngine {
         for (auto& module : modules) {
             module->update(inputs);
         }
+
+        // Bind to the registered keyboard device; inputID uses Windows virtual-key codes ('D' here).
+        if (InputSystem::isActive(Bindings::KeyEscape)) {
+            running = false;
+        }
+
+        // std::cout << "Mouse Position: (" 
+        //     << InputSystem::getAnalog(Bindings::MouseX) << ", " 
+        //     << InputSystem::getAnalog(Bindings::MouseY) << ")" << std::endl;
     }
 }

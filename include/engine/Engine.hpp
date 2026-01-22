@@ -31,6 +31,8 @@ namespace ParteeEngine {
         void run();   
 
     private:
+        bool running = false;
+        
         std::vector<std::unique_ptr<Module>> modules;
         std::deque<Entity> entities;
 

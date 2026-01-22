@@ -162,7 +162,7 @@ namespace ParteeEngine {
             float centerDist = std::abs(axis.dot(delta));
             float overlap = projA + projB - centerDist;
             if (overlap <= 0.f) {
-                printf(">>> SEPARATING AXIS FOUND at axis %d <<<\n\n", i);
+                // printf(">>> SEPARATING AXIS FOUND at axis %d <<<\n\n", i);
                 m.colliding = false;
                 return m; // separating axis found
             }
