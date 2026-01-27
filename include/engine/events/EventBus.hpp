@@ -1,50 +1,45 @@
 #pragma once 
 
+#include <unordered_map>
+#include <vector>
+#include <functional>
+#include <typeindex>
+
 namespace ParteeEngine {
+
+    template<typename EventType>
+    struct Subscription {
+        EventType filter;
+        std::function<void(const EventType&)> callback;
+    };
 
     // EventBus: A simple event bus for inter-module communication.
     class EventBus {
     public:
-        EventBus() = default;
-        ~EventBus() = default;
 
         // Publish an event to the bus.
-        template<typename Event>
-        void publish(Args&&... args);
-
-        // Subscribe to an event type with a callback.
         template<typename EventType>
-        void subscribe(std::function<void(const Event&)> callback);
+        static void publish(const EventType& event) {
+            for (const auto& subscriber : getSubscribers<EventType>()) {
+                if (!(subscriber.filter == event)) {
+                    continue;
+                }
+                subscriber.callback(event);
+            }
+        };
 
-        static EventBus const& getInstance();
+        template<typename EventType>
+        static void subscribe(EventType filter, std::function<void(const EventType&)> callback) {
+            filter.subscribed();
+            getSubscribers<EventType>().emplace_back(Subscription<EventType>{filter, callback});
+        };
 
     private:
-        std::unordered_map<std::type_index, std::vector<std::function<void(const void*)>>> subscribers;
-    };
-
-    template<typename Event>
-    void EventBus::publish(Args&&... args) {
-        static_assert(std::is_base_of_v<Event, Event>, "Event must inherit from Event");
-        Event event(std::forward<Args>(args)...);
-        auto it = subscribers.find(typeid(Event));
-        if (it != subscribers.end()) {
-            for (const auto& callback : it->second) {
-                callback(&event);
-            }
+        template<typename EventType>
+        static std::vector<Subscription<EventType>>& getSubscribers() {
+            static std::vector<Subscription<EventType>> subscribers;
+            return subscribers;
         }
-    }
-
-    template<typename EventType>
-    void EventBus::subscribe(std::function<void(const EventType&)> callback) {
-        static_assert(std::is_base_of_v<Event, EventType>, "EventType must inherit from Event");
-        subscribers[typeid(EventType)].push_back([callback](const void* event) {
-            callback(*static_cast<const EventType*>(event));
-        });
-    }
-
-    static EventBus const& EventBus::getInstance() {
-        static EventBus instance;
-        return instance;
-    }
+    };
 
 } // namespace ParteeEngine

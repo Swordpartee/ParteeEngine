@@ -6,6 +6,10 @@
 #include "engine/entities/components/BoxColliderComponent.hpp"
 #include "engine/RenderableFactory.hpp"
 #include "engine/input/InputSystem.hpp"
+#include "engine/input/devices/Keyboard.hpp"
+#include "engine/input/devices/Mouse.hpp"
+#include "engine/events/EventBus.hpp"
+#include "engine/input/InputEvent.hpp"
 
 #include "interpreter/Lexer.hpp"
 #include "interpreter/Parser.hpp"
@@ -45,6 +49,13 @@ boolean runEngine() {
     entity3.getComponent<TransformComponent>()->setScale({50.0f, 50.0f, 5.0f});
 
     entity3.getComponent<RigidBodyComponent>()->setVelocity({-20.0f, 0.0f, 0.0f});
+
+    EventBus::subscribe<InputEvent>(InputEvent{Bindings::KeySpace, true},
+        [&](const InputEvent& event) {
+            auto* rb = entity.getComponent<RigidBodyComponent>();
+            if (!rb) { return; }
+            rb->getVelocity() += Vector3{0.0f, -300.0f, 0.0f};
+    });
 
     engine.run();
 

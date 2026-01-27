@@ -21,9 +21,14 @@ namespace ParteeEngine {
 
         static void registerDevice(std::unique_ptr<InputDevice> device);
 
+        static void registerInputEventSubscription(InputBinding binding);
+
     private:
+        static inline std::unordered_map<InputBinding, bool> subscribedEventStates;
         static inline std::unordered_map<DeviceTypeID, std::vector<std::unique_ptr<InputDevice>>> devices;
         static inline std::mutex devicesMutex;
+
+        static bool isActiveInternal(InputBinding binding);
     };
 
 } // namespace ParteeEngine

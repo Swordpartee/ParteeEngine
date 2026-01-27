@@ -1,15 +1,28 @@
 #include "engine/Engine.hpp"
 
-#include "engine/input/InputSystem.hpp"
-#include "engine/input/devices/Keyboard.hpp"
-#include "engine/input/devices/Mouse.hpp"
 
 #include <memory>
 #include <iostream>
 
+#include "engine/input/InputSystem.hpp"
+#include "engine/input/devices/Keyboard.hpp"
+#include "engine/input/devices/Mouse.hpp"
+#include "engine/events/EventBus.hpp"
+#include "engine/input/InputEvent.hpp"
+
 namespace ParteeEngine {
 
-    Engine::Engine() {}
+    Engine::Engine() {
+        InputSystem::registerDevice(std::make_unique<Keyboard>());
+        InputSystem::registerDevice(std::make_unique<Mouse>());
+
+        
+        EventBus::subscribe<InputEvent>(InputEvent{Bindings::KeyEscape, true},
+            [this](const InputEvent& event) {
+                this->running = false;
+        });
+
+    }
 
     Entity& Engine::createEntity() {
         // entities.emplace_back(*this);
@@ -25,9 +38,6 @@ namespace ParteeEngine {
             module->initialize(initInputs);
         }
 
-        InputSystem::registerDevice(std::make_unique<Keyboard>());
-        InputSystem::registerDevice(std::make_unique<Mouse>());
-
         // Main loop
         lastFrameTime = std::chrono::steady_clock::now();
         running = true;
@@ -36,8 +46,7 @@ namespace ParteeEngine {
         }
     }
 
-    void Engine::update()
-    {
+    void Engine::update() {
         // Calculate actual delta time
         auto currentTime = std::chrono::steady_clock::now();
         std::chrono::duration<float> delta = currentTime - lastFrameTime;
@@ -47,14 +56,11 @@ namespace ParteeEngine {
         
         dt = dt * 5.0f; // Speed up for testing
 
+        InputSystem::poll();
+
         ModuleUpdateInputs inputs{entities, dt};
         for (auto& module : modules) {
             module->update(inputs);
-        }
-
-        // Bind to the registered keyboard device; inputID uses Windows virtual-key codes ('D' here).
-        if (InputSystem::isActive(Bindings::KeyEscape)) {
-            running = false;
         }
 
         // std::cout << "Mouse Position: (" 

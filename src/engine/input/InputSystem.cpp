@@ -1,5 +1,8 @@
 #include "engine/input/InputSystem.hpp"
 
+#include "engine/events/EventBus.hpp"
+#include "engine/input/InputEvent.hpp"
+
 namespace ParteeEngine {
 
     void InputSystem::poll() {
@@ -9,34 +12,33 @@ namespace ParteeEngine {
                 device->poll();
             }
         }
+        for (auto& [binding, previousState] : subscribedEventStates) {
+            if (isActiveInternal(binding) != previousState) {
+                // State changed, publish event
+                EventBus::publish<InputEvent>(InputEvent{binding, !previousState});
+                previousState = !previousState;
+            }
+        }
     }
 
     bool InputSystem::isActive(InputBinding binding) {
         std::lock_guard lock(devicesMutex);
-        auto it = devices.find(binding.deviceID);
-        if (it != devices.end()) {
-            const auto& deviceList = it->second;
-            if (binding.deviceIndex >= 0 && static_cast<size_t>(binding.deviceIndex) < deviceList.size()) {
-                return deviceList[static_cast<size_t>(binding.deviceIndex)]->isActive(binding);
-            } else {
-                throw std::out_of_range("Device index out of range for device");
-            }
-        } else {
-            throw std::invalid_argument("Device ID not found in registered devices");
-        }
-        return false;
+        auto device = devices.find(binding.deviceID);
+        return isActiveInternal(binding);
+       
     }
 
     float InputSystem::getAnalog(InputBinding binding) {
         std::lock_guard lock(devicesMutex);
         auto it = devices.find(binding.deviceID);
-        if (it != devices.end()) {
-            const auto& deviceList = it->second;
-            if (binding.deviceIndex >= 0 && static_cast<size_t>(binding.deviceIndex) < deviceList.size()) {
-                return deviceList[static_cast<size_t>(binding.deviceIndex)]->getAnalog(binding);
-            }
+        if (it == devices.end()) {
+            throw std::invalid_argument("Device type not found for analog input.");
         }
-        return 0.0f;
+        const auto& deviceList = it->second;
+        if (binding.deviceIndex >= deviceList.size()) {
+            throw std::out_of_range("Device index out of range for analog input.");
+        }
+        return deviceList[binding.deviceIndex]->getAnalog(binding);
     }
 
     void InputSystem::registerDevice(std::unique_ptr<InputDevice> device) {
@@ -47,6 +49,26 @@ namespace ParteeEngine {
         DeviceTypeID typeID = device->getDeviceTypeID();
         std::lock_guard lock(devicesMutex);
         devices[typeID].push_back(std::move(device));
+    }
+
+    void InputSystem::registerInputEventSubscription(InputBinding binding) {
+        auto it = devices.find(binding.deviceID);
+        if (it == devices.end()) {
+            throw std::invalid_argument("Device type not found.");
+        }
+        subscribedEventStates[binding] = isActive(binding);
+    }
+
+    bool InputSystem::isActiveInternal(InputBinding binding) {
+        auto device = devices.find(binding.deviceID);
+        if (device == devices.end()) {
+            throw std::invalid_argument("Device type not found.");
+        }
+        const auto& deviceList = device->second;
+        if (binding.deviceIndex >= deviceList.size()) {
+            throw std::out_of_range("Device index out of range.");
+        }
+        return deviceList[binding.deviceIndex]->isActive(binding);
     }
 
 } // namespace ParteeEngine
