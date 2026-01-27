@@ -10,8 +10,8 @@ namespace ParteeEngine {
     class RenderModule3d: public Module {
     friend class Engine;
     public:
-        void initialize(const ModuleInputs &inputs) override;
-        void update(const ModuleUpdateInputs &inputs) override;
+        bool initialize(const ModuleInputs &inputs) override;
+        bool update(const ModuleUpdateInputs &inputs) override;
 
         RenderModule3d(int width = 800, int height = 600) : Module(), window(width, height) {};
 

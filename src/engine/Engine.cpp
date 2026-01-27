@@ -60,7 +60,9 @@ namespace ParteeEngine {
 
         ModuleUpdateInputs inputs{entities, dt};
         for (auto& module : modules) {
-            module->update(inputs);
+            if (!module->update(inputs)) {
+                running = false;
+            }
         }
 
         // std::cout << "Mouse Position: (" 

@@ -12,7 +12,7 @@ namespace ParteeEngine {
 
     struct RenderData;
 
-    void RenderModule2d::initialize(const ModuleInputs &inputs) {
+    bool RenderModule2d::initialize(const ModuleInputs &inputs) {
         window.show();
 
         PIXELFORMATDESCRIPTOR pfd = {
@@ -52,11 +52,13 @@ namespace ParteeEngine {
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
         glEnable(GL_LINE_SMOOTH);
+
+        return true;
     }
 
-    void RenderModule2d::update(const ModuleUpdateInputs &inputs) {
+    bool RenderModule2d::update(const ModuleUpdateInputs &inputs) {
         if (!window.processMessages()) {
-            return;
+            return false;
         }
 
         // Clear screen
@@ -134,7 +136,7 @@ namespace ParteeEngine {
         }
 
         // Swap buffers (show what we drew)
-        SwapBuffers(window.getHDC());
+        return SwapBuffers(window.getHDC());
     }
 
 } // namespace ParteeEngine

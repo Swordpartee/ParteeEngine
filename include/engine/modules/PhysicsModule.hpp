@@ -20,9 +20,9 @@ namespace ParteeEngine {
     public:
         ~PhysicsModule() override = default;
 
-        void initialize(const ModuleInputs& inputs) override;
+        bool initialize(const ModuleInputs& inputs) override;
 
-        void update(const ModuleUpdateInputs& inputs) override;
+        bool update(const ModuleUpdateInputs& inputs) override;
 
         // Physics settings
         void setGravity(const Vector3& g) { gravity = g; }

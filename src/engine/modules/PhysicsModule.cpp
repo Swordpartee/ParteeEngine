@@ -14,11 +14,12 @@
 
 namespace ParteeEngine {
 
-    void PhysicsModule::initialize(const ModuleInputs& inputs) {
+    bool PhysicsModule::initialize(const ModuleInputs& inputs) {
         // Initialize physics settings
+        return true;
     }
 
-    void PhysicsModule::update(const ModuleUpdateInputs& inputs) {
+    bool PhysicsModule::update(const ModuleUpdateInputs& inputs) {
         // Calculate physics for all entities with rigidbodies
         for (auto& entity : inputs.entities) {
             if (entity.getComponent<RigidBodyComponent>()) {
@@ -28,6 +29,7 @@ namespace ParteeEngine {
 
         // Check for collisions
         checkCollisions(inputs.entities);
+        return true;
     }
 
     void PhysicsModule::calculatePhysics(Entity& entity, float dt) {

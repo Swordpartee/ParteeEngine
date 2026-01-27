@@ -19,9 +19,9 @@ namespace ParteeEngine {
     public:
         virtual ~Module() = default;
 
-        virtual void initialize(const ModuleInputs& inputs) = 0;
+        virtual bool initialize(const ModuleInputs& inputs) = 0;
 
-        virtual void update(const ModuleUpdateInputs& inputs) = 0;
+        virtual bool update(const ModuleUpdateInputs& inputs) = 0;
 
     protected:
       Module() = default;

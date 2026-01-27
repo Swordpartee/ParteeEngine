@@ -11,7 +11,7 @@
 
 namespace ParteeEngine {
 
-    void RenderModule3d::initialize(const ModuleInputs &inputs) {
+    bool RenderModule3d::initialize(const ModuleInputs &inputs) {
         window.show();
 
         PIXELFORMATDESCRIPTOR pfd = {
@@ -68,11 +68,13 @@ namespace ParteeEngine {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        return true;
+        
     }
 
-    void RenderModule3d::update(const ModuleUpdateInputs &inputs) {
+    bool RenderModule3d::update(const ModuleUpdateInputs &inputs) {
         if (!window.processMessages()) {
-            return;
+            return false;
         }
 
         // Clear screen and depth buffer
@@ -197,7 +199,7 @@ namespace ParteeEngine {
         }
 
         // Swap buffers
-        SwapBuffers(window.getHDC());
+        return SwapBuffers(window.getHDC());
     }
 
 } // namespace ParteeEngine
