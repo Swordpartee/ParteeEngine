@@ -25,50 +25,64 @@ namespace parteeengine {
     template<typename T>
     class ComponentArray : public VirtualComponentArray {
     public:
-        void registerEntity(Entity entity) override {
-            if (entityToIndex.contains(entity.id)) {
-                throw std::runtime_error("Entity already has component");
-            }
-            size_t index = components.size();
-            components.push_back(T());
-            indexToEntity.push_back(entity.id);
-            entityToIndex[entity.id] = index;
-        }
+        void registerEntity(Entity entity) override;
 
-        void removeEntity(Entity entity) override {
-            auto it = entityToIndex.find(entity.id);
-            if (it == entityToIndex.end()) return;
+        void removeEntity(Entity entity) override;
 
-            size_t removedIndex = it->second;
-            size_t lastIndex = components.size() - 1;
+        T& get(Entity entity);
 
-            if (removedIndex != lastIndex) {
-                components[removedIndex] = std::move(components[lastIndex]);
-                EntityId movedId = indexToEntity[lastIndex];
-                entityToIndex[movedId] = removedIndex;
-                indexToEntity[removedIndex] = movedId;
-            }
-
-            components.pop_back();
-            indexToEntity.pop_back();
-            entityToIndex.erase(it);
-        }
-
-        T& get(Entity entity) {
-            auto it = entityToIndex.find(entity.id);
-            if (it == entityToIndex.end()) {
-                throw std::runtime_error("Entity does not have component");
-            }
-            return components[it->second];
-        }
-
-        std::vector<T>& getComponents() { return components; }
-        const std::vector<T>& getComponents() const { return components; }
+        std::vector<T>& getComponents();
+        const std::vector<T>& getComponents() const;
 
     private:
         std::vector<EntityId> indexToEntity;                   // Index → Entity ID
         std::unordered_map<EntityId, size_t> entityToIndex;    // Entity ID → index
         std::vector<T> components;                             // Component data (packed)
     };
+
+    template<typename T>
+    void ComponentArray<T>::registerEntity(Entity entity) {
+        if (entityToIndex.contains(entity.id)) {
+            throw std::runtime_error("Entity already has component");
+        }
+        size_t index = components.size();
+        components.push_back(T());
+        indexToEntity.push_back(entity.id);
+        entityToIndex[entity.id] = index;
+    }
+
+    template<typename T>
+    void ComponentArray<T>::removeEntity(Entity entity) {
+        auto it = entityToIndex.find(entity.id);
+        if (it == entityToIndex.end()) return;
+
+        size_t removedIndex = it->second;
+        size_t lastIndex = components.size() - 1;
+
+        if (removedIndex != lastIndex) {
+            components[removedIndex] = std::move(components[lastIndex]);
+            EntityId movedId = indexToEntity[lastIndex];
+            entityToIndex[movedId] = removedIndex;
+            indexToEntity[removedIndex] = movedId;
+        }
+
+        components.pop_back();
+        indexToEntity.pop_back();
+        entityToIndex.erase(it);
+    }
+    template<typename T>
+    T& ComponentArray<T>::get(Entity entity) {
+        auto it = entityToIndex.find(entity.id);
+        if (it == entityToIndex.end()) {
+            throw std::runtime_error("Entity does not have component");
+        }
+        return components[it->second];
+    }
+
+    template<typename T>
+    std::vector<T>& ComponentArray<T>::getComponents() { return components; }
+    
+    template<typename T>
+    const std::vector<T>& ComponentArray<T>::getComponents() const { return components; }
 
 } // namespace parteeengine
