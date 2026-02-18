@@ -1,64 +1,45 @@
 #pragma once
 
-#include "modules/Module.hpp"
-#include "engine/core/entities/Entity.hpp"
+#include "engine/core/modules/ModuleManager.hpp"
+#include "engine/core/entities/EntityManager.hpp"
 
-#include <deque>
-#include <type_traits>
-#include <memory>
-#include <algorithm>
-#include <stdexcept>
-#include <chrono>
-
-namespace ParteeEngine {
-
-    // Module concept
-    template <typename T>
-    concept IsModule = std::is_base_of_v<Module, T>;
-
-    struct ModuleInputs;
-    struct ModuleUpdateInputs;
+namespace parteeengine {
 
     class Engine {
     public:
         Engine();
+        ~Engine();
 
-        template <IsModule T>
-        void addModule();
+        // Adds a module of type T to the engine. Throws if a module of that type already exists.
+        template<EngineModule T>
+        T& createModule();
 
-        template <IsModule T, typename ConfigFunct>
-        Engine& addModule(ConfigFunct&& configure) {
-            auto& comp = addComponent<T>();
-            configure(comp);
-            return *this;
-        };
+        // Gets a pointer to the module of type T, or nullptr if it doesn't exist.
+        template<EngineModule T>
+        T* getModule();
 
-        Entity& createEntity();
+        // Entity management
+        Entity createEntity();
+        void destroyEntity(const Entity entity);
+        // Checks if the given entity is valid (exists and has not been destroyed)
+        bool isValidEntity(const Entity& entity) const;
 
-        void run();   
+        void run();
 
     private:
-        bool running = false;
-        
-        std::vector<std::unique_ptr<Module>> modules;
-        std::deque<Entity> entities;
+        bool running = false; // Engine running state
 
-        ModuleInputs moduleInputs{};
-
-        std::chrono::steady_clock::time_point lastFrameTime;
-
-        void update();
+        EntityManager entityManager; // Manages entity creation and destruction
+        ModuleManager moduleManager; // Manages engine modules
     };
 
-    template <IsModule T>
-    void Engine::addModule() {
-        // Check if module type already exists
-        if (std::find_if(modules.begin(), modules.end(), [](const auto &mod)
-                         { return typeid(*mod) == typeid(T); }) != modules.end()) {
-            throw std::runtime_error("Module type already present");
-        }
-
-        modules.emplace_back(std::make_unique<T>());
+    template<EngineModule T>
+    T& Engine::createModule() {
+        return moduleManager.createModule<T>();
     }
 
-} // namespace ParteeEngine
+    template<EngineModule T>
+    T* Engine::getModule() {
+        return moduleManager.getModule<T>();
+    }
+} // namespace parteeengine

@@ -1,30 +1,24 @@
 #pragma once
 
-#include "ModuleTraits.hpp"
-#include <deque>
+namespace parteeengine {
 
-namespace ParteeEngine {
-
-    class IWindow;
-    class Entity;
-
-    struct ModuleInputs {
-    };
-    struct ModuleUpdateInputs {
-        std::deque<Entity> &entities;
-        float deltaTime;
+    struct ModuleInput {
+        
     };
 
     class Module {
     public:
         virtual ~Module() = default;
 
-        virtual bool initialize(const ModuleInputs& inputs) = 0;
+        virtual bool initialize(const ModuleInput& input) = 0;
+        virtual bool update(const ModuleInput& input) = 0;
 
-        virtual bool update(const ModuleUpdateInputs& inputs) = 0;
+        bool requestStop() {
+            return stopRequested;
+        }
 
-    protected:
-      Module() = default;
+    private:
+        bool stopRequested = false;
     };
 
-} // namespace ParteeEngine
+} // namespace parteeengine
