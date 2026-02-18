@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Module.hpp"
-#include "engine/math/Vector3.hpp"
+#include "engine/core/modules/Module.hpp"
+#include "engine/util/Vector3.hpp"
 
 namespace ParteeEngine {
 

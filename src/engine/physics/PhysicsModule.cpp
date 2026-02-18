@@ -1,11 +1,11 @@
-#include "engine/modules/PhysicsModule.hpp"
+#include "engine/physics/PhysicsModule.hpp"
 
-#include "engine/entities/Entity.hpp"
-#include "engine/entities/components/ColliderComponent.hpp"
-#include "engine/entities/components/BoxColliderComponent.hpp"
-#include "engine/entities/components/RigidBodyComponent.hpp"
-#include "engine/entities/components/TransformComponent.hpp"
-#include "engine/math/Vector3.hpp"
+#include "engine/core/entities/Entity.hpp"
+#include "engine/physics/ColliderComponent.hpp"
+#include "engine/physics/BoxColliderComponent.hpp"
+#include "engine/physics/RigidBodyComponent.hpp"
+#include "engine/core/entities/TransformComponent.hpp"
+#include "engine/util/Vector3.hpp"
 
 #include <algorithm>
 #include <cfloat>

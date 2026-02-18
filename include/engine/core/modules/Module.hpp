@@ -5,10 +5,10 @@
 
 namespace ParteeEngine {
 
+    class IWindow;
     class Entity;
 
     struct ModuleInputs {
-
     };
     struct ModuleUpdateInputs {
         std::deque<Entity> &entities;

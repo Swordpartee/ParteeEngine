@@ -1,13 +1,16 @@
 #pragma once
 
-#include "components/Component.hpp"
-#include "components/ComponentId.hpp"
+#include "engine/core/entities/Component.hpp"
+#include "engine/core/entities/ComponentId.hpp"
 
 #include <memory>
 #include <stdexcept>
 #include <unordered_map>
 
 namespace ParteeEngine {
+
+    template <typename T>
+    concept IsComponent = std::is_base_of_v<Component, T>;
 
     class Entity {
     public:
@@ -20,34 +23,16 @@ namespace ParteeEngine {
         Entity(Entity&&) = default;
         Entity& operator=(Entity&&) = default;
 
-        // Add component - takes ownership
-        template <typename T, typename... Args>
-        T& addComponent(Args&&... args) {
-            static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
-
-            ComponentID id = ComponentID::of<T>();
-            
-            if (components.find(id) != components.end()) {
-                throw std::runtime_error("Component already exists on entity");
-            }
-
-            auto component = std::make_unique<T>(std::forward<Args>(args)...);
-            T& ref = *component;
-            
-            component->setOwner(this);
-            components[id] = std::move(component);
-
-            ref.requireDependencies();
-            
-            ref.onAttach();
-            
-            return ref;
+        template <IsComponent T, typename ConfigFunct>
+        Entity& with(ConfigFunct&& configure) {
+            auto& comp = addComponent<T>();
+            configure(comp);
+            return *this;
         }
 
         // Get component - returns nullptr if not found
-        template <typename T> 
+        template <IsComponent T> 
         T *getComponent() {
-        static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 
             // First try exact type match
             ComponentID id = ComponentID::of<T>();
@@ -68,9 +53,8 @@ namespace ParteeEngine {
         }
 
         // Get component const
-        template <typename T> 
+        template <IsComponent T> 
         const T *getComponent() const {
-            static_assert(std::is_base_of_v<Component, T>, "T must inherit from Component");
 
             // First try exact type match
             ComponentID id = ComponentID::of<T>();
@@ -90,7 +74,7 @@ namespace ParteeEngine {
             return nullptr;
         }
 
-        template <typename T> 
+        template <IsComponent T> 
         void ensureComponent() {
             if (!hasComponent<T>()) {
                 addComponent<T>();
@@ -99,14 +83,14 @@ namespace ParteeEngine {
 
 
         // Has component
-        template <typename T>
+        template <IsComponent T>
         bool hasComponent() const {
             ComponentID id = ComponentID::of<T>();
             return components.find(id) != components.end();
         }
 
         // Remove component
-        template <typename T>
+        template <IsComponent T>
         void removeComponent() {
             ComponentID id = ComponentID::of<T>();
             auto it = components.find(id);
@@ -127,6 +111,28 @@ namespace ParteeEngine {
         std::unordered_map<ComponentID, std::unique_ptr<Component>> components;
 
         friend class Component;
+
+        // Add component - takes ownership
+        template <IsComponent T>
+        T& addComponent() {
+            ComponentID id = ComponentID::of<T>();
+            
+            if (components.find(id) != components.end()) {
+                throw std::runtime_error("Component already exists on entity");
+            }
+
+            auto component = std::make_unique<T>();
+            T& ref = *component;
+            
+            component->setOwner(this);
+            components[id] = std::move(component);
+
+            ref.requireDependencies();
+            
+            ref.onAttach();
+            
+            return ref;
+        }
     };
 
 }

@@ -1,9 +1,11 @@
 #include "engine/rendering/window/IWindow.hpp"
 
+#include "engine/rendering/window/W32Window.hpp"
+
 namespace ParteeEngine::Rendering {
     std::unique_ptr<IWindow> IWindow::createPlatformWindow() {
         #if defined(_WIN32)
-            return std::make_unique<Win32Window>();
+            return std::make_unique<W32Window>();
         #elif defined(__linux__)
             // return std::make_unique<X11Window>();
             static_assert(false, "Linux window not yet implemented");

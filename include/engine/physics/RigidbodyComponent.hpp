@@ -1,8 +1,8 @@
 #pragma once
 
-#include "TransformComponent.hpp"
-#include "engine/math/Vector3.hpp"
-#include "engine/entities/components/Component.hpp"
+#include "engine/core/entities/TransformComponent.hpp"
+#include "engine/util/Vector3.hpp"
+#include "engine/core/entities/Component.hpp"
 
 namespace ParteeEngine {
 

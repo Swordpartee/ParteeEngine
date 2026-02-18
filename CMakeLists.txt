@@ -13,6 +13,10 @@ include_directories(libs)
 # Recursively find all .cpp files in src
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
+message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER}")
+message(STATUS "C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "C++ Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+
 # Create executable
 add_executable(ParteeEngine ${SOURCES})
 

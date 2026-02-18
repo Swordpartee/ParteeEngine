@@ -11,15 +11,15 @@ namespace ParteeEngine::Rendering {
 
     class W32Window : public IWindow {
     public:
-        Win32Window();
-        ~Win32Window() override;
+        W32Window();
+        ~W32Window() override;
 
         bool create(const WindowConfig& config) override;
         bool destroy() override;
         bool show() override;
         bool hide() override;
 
-        void swapBuffers() override;
+        bool swapBuffers() override;
         bool pollEvents() override;
 
         NativeGraphicsContext getNativeContext() const override;
@@ -35,7 +35,7 @@ namespace ParteeEngine::Rendering {
         HDC hdc = nullptr;
         HGLRC hglrc = nullptr;
 
-        WindowConfig config = nullptr;
+        WindowConfig config = {};
 
         WindowEventCallback eventCallback;
 

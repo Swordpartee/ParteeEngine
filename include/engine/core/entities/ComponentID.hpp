@@ -33,7 +33,7 @@ namespace ParteeEngine {
 }
 
 namespace std {
-    template <>
+    template<>
     struct hash<ParteeEngine::ComponentID> {
         size_t operator()(const ParteeEngine::ComponentID& id) const {
             return std::hash<std::type_index>()(id.typeIndex);

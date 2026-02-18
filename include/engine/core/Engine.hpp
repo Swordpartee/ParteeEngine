@@ -1,7 +1,7 @@
 #pragma once
 
 #include "modules/Module.hpp"
-#include "engine/entities/Entity.hpp"
+#include "engine/core/entities/Entity.hpp"
 
 #include <deque>
 #include <type_traits>
@@ -23,8 +23,15 @@ namespace ParteeEngine {
     public:
         Engine();
 
-        template <IsModule T, typename... Args>
-        void addModule(Args&&... args);
+        template <IsModule T>
+        void addModule();
+
+        template <IsModule T, typename ConfigFunct>
+        Engine& addModule(ConfigFunct&& configure) {
+            auto& comp = addComponent<T>();
+            configure(comp);
+            return *this;
+        };
 
         Entity& createEntity();
 
@@ -43,15 +50,15 @@ namespace ParteeEngine {
         void update();
     };
 
-    template <IsModule T, typename... Args>
-    void Engine::addModule(Args&&... args) {
+    template <IsModule T>
+    void Engine::addModule() {
         // Check if module type already exists
         if (std::find_if(modules.begin(), modules.end(), [](const auto &mod)
                          { return typeid(*mod) == typeid(T); }) != modules.end()) {
             throw std::runtime_error("Module type already present");
         }
 
-        modules.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+        modules.emplace_back(std::make_unique<T>());
         modules.back()->initialize(moduleInputs);
     }
 

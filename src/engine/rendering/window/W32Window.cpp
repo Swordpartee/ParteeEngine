@@ -44,7 +44,7 @@ namespace ParteeEngine::Rendering {
         return hdc != nullptr;
     }
 
-    void W32Window::destroy() {
+    bool W32Window::destroy() {
         if (hglrc) {
             wglMakeCurrent(nullptr, nullptr);
             wglDeleteContext(hglrc);
@@ -58,19 +58,22 @@ namespace ParteeEngine::Rendering {
             DestroyWindow(hwnd);
             hwnd = nullptr;
         }
+        return true;
     }
 
-    void W32Window::show() {
-        ShowWindow(hwnd, SW_SHOW);
-        UpdateWindow(hwnd);
+    bool W32Window::show() {
+        if (!ShowWindow(hwnd, SW_SHOW)) {
+            return false;
+        }
+        return UpdateWindow(hwnd);
     }
 
-    void W32Window::hide() {
-        ShowWindow(hwnd, SW_HIDE);
+    bool W32Window::hide() {
+        return ShowWindow(hwnd, SW_HIDE);
     }
     
-    void Win32Window::swapBuffers() {
-        SwapBuffers(hdc);
+    bool W32Window::swapBuffers() {
+        return SwapBuffers(hdc);
     }
 
     bool W32Window::pollEvents() {
@@ -108,18 +111,25 @@ namespace ParteeEngine::Rendering {
 
     void W32Window::handleMessage(UINT msg, WPARAM wParam, LPARAM lParam) {
         if (eventCallback) {
-            WindowEvent event;
             switch (msg) {
                 case WM_CLOSE:
-                    eventCallback({WindowEvent::Type::Close});
+                    eventCallback(WindowEvent{WindowEvent::Type::Close});
                     break;
                 case WM_SIZE:
-                    eventCallback({WindowEvent::Type::Resize});
+                    eventCallback(WindowEvent{WindowEvent::Type::Resize});
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    WindowConfig W32Window::getConfig() const {
+        return config;
+    }
+
+    void W32Window::setEventCallback(WindowEventCallback callback) {
+        eventCallback = callback;
     }
 
 }

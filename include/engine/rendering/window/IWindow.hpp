@@ -1,12 +1,17 @@
 #pragma once
 
+#include "engine/events/Event.hpp"
+
+#include <functional>
+#include <memory>
+
 namespace ParteeEngine::Rendering {
     
     struct WindowConfig {
         int width = 800;
         int height = 600;
         const char* title = "ParteeEngine Window";
-    }
+    };
 
     struct WindowEvent : public Event {
         enum class Type {
@@ -17,6 +22,8 @@ namespace ParteeEngine::Rendering {
         void subscribed() override {};
 
         Type type;
+
+        explicit WindowEvent(Type t) : type(t) {}
     };
 
     // Platform-agnostic graphics context handle
@@ -29,6 +36,7 @@ namespace ParteeEngine::Rendering {
     using WindowEventCallback = std::function<void(const WindowEvent&)>;
 
     class IWindow {
+    public:
         virtual ~IWindow() = default;
 
         virtual bool create(const WindowConfig& config) = 0;
@@ -36,7 +44,7 @@ namespace ParteeEngine::Rendering {
         virtual bool show() = 0;
         virtual bool hide() = 0;
         
-        virtual void swapBuffers() = 0;
+        virtual bool swapBuffers() = 0;
         virtual bool pollEvents() = 0;
 
         virtual NativeGraphicsContext getNativeContext() const = 0;

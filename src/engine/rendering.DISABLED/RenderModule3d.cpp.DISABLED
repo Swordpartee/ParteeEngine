@@ -1,13 +1,13 @@
-#include "engine/modules/RenderModule3d.hpp"
+// #include "engine//RenderModule3d.hpp"
 
-#include "engine/entities/components/RenderComponent.hpp"
-#include "engine/entities/components/TransformComponent.hpp"
-#include "engine/entities/Entity.hpp"
+// #include "engine/entities/components/RenderComponent.hpp"
+// #include "engine/entities/components/TransformComponent.hpp"
+// #include "engine/entities/Entity.hpp"
 
-#include <GL/gl.h>
-#include <windows.h>
-#include <cmath>
-#include <algorithm>
+// #include <GL/gl.h>
+// #include <windows.h>
+// #include <cmath>
+// #include <algorithm>
 
 namespace ParteeEngine {
 
