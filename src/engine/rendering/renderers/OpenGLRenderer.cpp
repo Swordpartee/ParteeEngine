@@ -75,16 +75,20 @@ namespace parteeengine::rendering {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (const auto& component : frame.commands) {
-            const QuadRenderComponent& quad = static_cast<const QuadRenderComponent&>(*component);
+        for (const auto& command : frame.commands) {
+            if (command->getType() == typeid(QuadRenderCommand)) {
+                const auto* quadCmd = static_cast<const QuadRenderCommand*>(command.get());
+                const RenderQuad& quad = quadCmd->quad;
 
-            glColor4f(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
-            glBegin(GL_QUADS);
-            glVertex3f(quad.position.x, quad.position.y, 0.0f);
-            glVertex3f(quad.position.x + quad.width, quad.position.y, 0.0f);
-            glVertex3f(quad.position.x + quad.width, quad.position.y + quad.height, 0.0f);
-            glVertex3f(quad.position.x, quad.position.y + quad.height, 0.0f);
-            glEnd();
+                glColor4f(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
+                glBegin(GL_QUADS);
+                glVertex2f(quad.transform.position.x, quad.transform.position.y);
+                glVertex2f(quad.transform.position.x + quad.transform.scale.x, quad.transform.position.y);
+                glVertex2f(quad.transform.position.x + quad.transform.scale.x, quad.transform.position.y + quad.transform.scale.y);
+                glVertex2f(quad.transform.position.x, quad.transform.position.y + quad.transform.scale.y);
+                glEnd();
+
+            }
         }
 
         return true;

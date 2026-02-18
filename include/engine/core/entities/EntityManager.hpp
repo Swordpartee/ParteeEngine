@@ -3,10 +3,15 @@
 #include "engine/core/entities/ComponentArray.hpp"
 #include "engine/core/entities/ComponentRegistry.hpp"
 #include "engine/core/entities/Entity.hpp"
+#include "engine/core/entities/Component.hpp"
 
 #include <vector>
 
 namespace parteeengine {
+
+    // Component concept
+    template<typename T>
+    concept ComponentType = std::is_base_of_v<Component, T>;
 
     class EntityManager {
     public:
@@ -14,17 +19,18 @@ namespace parteeengine {
         void destroyEntity(const Entity entity);
         bool isValid(const Entity& entity) const;
 
-        template<typename T>
+        template<ComponentType T>
         T& addComponent(Entity entity);
 
-        template<typename T>
-        T& getComponent(Entity entity);
+        template<ComponentType T>
+        T* getComponent(Entity entity);
 
-        template<typename T>
+        template<ComponentType T>
         std::vector<T>& getComponentArray();
 
-        template<typename T>
+        template<ComponentType T>
         std::vector<std::pair<Entity, T>> getEntityComponentPairs();
+
 
     private:
         std::vector<Generation> generations;  // Generation count for each entity ID
@@ -34,7 +40,7 @@ namespace parteeengine {
         std::unordered_map<ComponentId, std::unique_ptr<VirtualComponentArray>> entityComponents;  // Component ID → packed component array
     };
 
-    template<typename T>
+    template<ComponentType T>
     T& EntityManager::addComponent(Entity entity) {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
@@ -48,21 +54,21 @@ namespace parteeengine {
         return array->get(entity);
     }
 
-    template<typename T>
-    T& EntityManager::getComponent(Entity entity) {
+    template<ComponentType T>
+    T* EntityManager::getComponent(Entity entity) {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
-            throw std::runtime_error("Entity does not have component");
+            return nullptr; // Return nullptr if entity doesn't have this component
         }
         auto* array = static_cast<ComponentArray<T>*>(it->second.get());
-        return array->get(entity);
+        return &array->get(entity);
     }
 
-    template<typename T>
+    template<ComponentType T>
     std::vector<T>& EntityManager::getComponentArray() {
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);
@@ -74,7 +80,7 @@ namespace parteeengine {
         return static_cast<ComponentArray<T>*>(it->second.get())->getComponents();
     }
 
-    template<typename T>
+    template<ComponentType T>
     std::vector<std::pair<Entity, T>> EntityManager::getEntityComponentPairs() {
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);

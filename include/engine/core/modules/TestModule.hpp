@@ -18,8 +18,10 @@ namespace parteeengine {
         }
 
         bool update(const ModuleInput& input) override {
-            auto& comp = input.entityManager.getComponent<TestComponent>(Entity{0, 0});
-            std::cout << comp.value << std::endl;
+            auto* comp = input.entityManager.getComponent<TestComponent>(Entity{0, 0});
+            if (comp) {
+                std::cout << comp->value << std::endl;
+            }
             return true;
         }
     };

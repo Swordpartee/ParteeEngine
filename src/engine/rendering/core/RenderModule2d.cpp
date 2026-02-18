@@ -15,13 +15,15 @@ namespace parteeengine::rendering {
         return true;
     };
 
-
     bool RenderModule2d::update(const ModuleInput& input) {
         RenderFrame frame;
         for (auto& [entity, component] : input.entityManager.getEntityComponentPairs<QuadRenderComponent>()) {
-            TransformComponent2d position = input.entityManager.getComponent<TransformComponent2d>(entity);
-            component.position = position;
-            frame.commands.emplace_back(std::make_unique<QuadRenderComponent>(component));  // Copy, don't store pointer
+            TransformComponent2d* position = input.entityManager.getComponent<TransformComponent2d>(entity);
+            if (position) {
+                component.quad.transform = position->transform;
+            }
+
+            frame.commands.push_back(std::make_unique<QuadRenderCommand>(component.quad));
         }
 
         return renderer->render(frame) && window->swapBuffers() && window->pollEvents();
