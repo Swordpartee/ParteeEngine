@@ -6,6 +6,7 @@ namespace parteeengine {
 
     using ComponentId = uint32_t;
 
+    // Assigns a unique ID to each component type at runtime.
     class ComponentRegistry {
     public:
         template<typename T>
@@ -16,7 +17,7 @@ namespace parteeengine {
     };
 
     template<typename T>
-    static ComponentId ComponentRegistry::getComponentID() {
+    ComponentId ComponentRegistry::getComponentID() {
         static const ComponentId id = nextID++;
         return id;
     }

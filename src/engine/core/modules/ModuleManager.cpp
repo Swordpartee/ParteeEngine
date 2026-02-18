@@ -2,16 +2,22 @@
 
 namespace parteeengine {
 
-    void ModuleManager::initializeModules(const ModuleInput& inputs) {
+    bool ModuleManager::initializeModules(const ModuleInput& inputs) {
         for (auto& [type, module] : modules) {
-            module->initialize(inputs);
+            if (!module->initialize(inputs)) {
+                return false;
+            }
         }
+        return true;
     }
 
-    void ModuleManager::updateModules(const ModuleInput& inputs) {
+    bool ModuleManager::updateModules(const ModuleInput& inputs) {
         for (auto& [type, module] : modules) {
-            module->update(inputs);
+            if (!module->update(inputs)) {
+                return false;
+            }
         }
+        return true;
     }
 
 } // namespace parteeengine

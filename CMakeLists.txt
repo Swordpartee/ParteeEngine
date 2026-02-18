@@ -26,5 +26,5 @@ target_link_libraries(ParteeEngine
     gdi32
 )
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")
-add_compile_options(/W4 /permissive- /WX)
+target_compile_options(ParteeEngine PRIVATE /W4 /permissive- /WX)
+target_compile_options(ParteeEngine PRIVATE "$<$<CONFIG:Debug>:/Zi>")

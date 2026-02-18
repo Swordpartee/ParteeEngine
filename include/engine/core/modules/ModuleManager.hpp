@@ -21,8 +21,8 @@ namespace parteeengine {
         template<EngineModule T>
         T* getModule();
 
-        void initializeModules(const ModuleInput& inputs);
-        void updateModules(const ModuleInput& inputs);
+        bool initializeModules(const ModuleInput& inputs);
+        bool updateModules(const ModuleInput& inputs);
 
     private:
         std::unordered_map<std::type_index, std::unique_ptr<Module>> modules; // Map of module type to module instance
@@ -35,7 +35,7 @@ namespace parteeengine {
         }
         modules.emplace(typeid(T), std::make_unique<T>());
         return *static_cast<T*>(modules[typeid(T)].get());
-    };
+    }
 
     template<EngineModule T>
     T* ModuleManager::getModule() {

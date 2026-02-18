@@ -1,73 +1,74 @@
 #pragma once
 
+#include "engine/core/entities/Entity.hpp"
+
 #include <vector>
 #include <memory>
+#include <unordered_map>
+#include <stdexcept>
 
 namespace parteeengine {
 
+    // Type-erased base class for component storage. Allows the EntityManager to
+    // manage heterogeneous component arrays through a uniform interface.
     class VirtualComponentArray {
     public:
         virtual ~VirtualComponentArray() = default;
 
-         // Add a component to the array (entity at this row)
-        virtual void addComponent(const void* component) = 0;
+        virtual void registerEntity(Entity entity) = 0;
 
-        // Remove component at index (swap-and-pop)
-        virtual void removeComponent(size_t index) = 0;
-
-        // Move a component from this array to another
-        // Used when entity migrates to different archetype
-        virtual void moveComponent(size_t fromIndex, VirtualComponentArray* toArray) = 0;
-
-        // Get pointer to component at index (for typed access)
-        virtual void* getComponent(size_t index) = 0;
+        // Removes entity's component. No-op if entity doesn't have this component type.
+        virtual void removeEntity(Entity entity) = 0;
     };
 
+    // Typed, packed component storage. Uses swap-and-pop removal for O(1) delete.
     template<typename T>
     class ComponentArray : public VirtualComponentArray {
-    private:
-        std::vector<T> data;
-
     public:
-        void addComponent(const void* component) override;
+        void registerEntity(Entity entity) override {
+            if (entityToIndex.contains(entity.id)) {
+                throw std::runtime_error("Entity already has component");
+            }
+            size_t index = components.size();
+            components.push_back(T());
+            indexToEntity.push_back(entity.id);
+            entityToIndex[entity.id] = index;
+        }
 
-        void removeComponent(size_t index) override;
+        void removeEntity(Entity entity) override {
+            auto it = entityToIndex.find(entity.id);
+            if (it == entityToIndex.end()) return;
 
-        void moveComponent(size_t fromIndex, VirtualComponentArray* toArray) override;
+            size_t removedIndex = it->second;
+            size_t lastIndex = components.size() - 1;
 
-        void* getComponent(size_t index) override;
+            if (removedIndex != lastIndex) {
+                components[removedIndex] = std::move(components[lastIndex]);
+                EntityId movedId = indexToEntity[lastIndex];
+                entityToIndex[movedId] = removedIndex;
+                indexToEntity[removedIndex] = movedId;
+            }
 
-        // Typed access (only use within ArchetypeManager)
-        T& get(size_t index);
+            components.pop_back();
+            indexToEntity.pop_back();
+            entityToIndex.erase(it);
+        }
 
+        T& get(Entity entity) {
+            auto it = entityToIndex.find(entity.id);
+            if (it == entityToIndex.end()) {
+                throw std::runtime_error("Entity does not have component");
+            }
+            return components[it->second];
+        }
+
+        std::vector<T>& getComponents() { return components; }
+        const std::vector<T>& getComponents() const { return components; }
+
+    private:
+        std::vector<EntityId> indexToEntity;                   // Index → Entity ID
+        std::unordered_map<EntityId, size_t> entityToIndex;    // Entity ID → index
+        std::vector<T> components;                             // Component data (packed)
     };
-
-    template<typename T>
-    void ComponentArray<T>::addComponent(const void* component) {
-        data.push_back(*static_cast<const T*>(component));
-    }
-
-    template<typename T>
-    void ComponentArray<T>::removeComponent(size_t index) {
-        // Swap-and-pop
-        data[index] = std::move(data.back());
-        data.pop_back();
-    }
-
-    template<typename T>
-    void ComponentArray<T>::moveComponent(size_t fromIndex, VirtualComponentArray* toArray) {
-        auto* otherArray = static_cast<ComponentArray<T>*>(toArray);
-        otherArray->data.push_back(std::move(data[fromIndex]));
-    }
-
-    template<typename T>
-    void* ComponentArray<T>::getComponent(size_t index) {
-        return &data[index];
-    }
-
-    template<typename T>
-    T& ComponentArray<T>::get(size_t index) {
-        return data[index];
-    }
 
 } // namespace parteeengine

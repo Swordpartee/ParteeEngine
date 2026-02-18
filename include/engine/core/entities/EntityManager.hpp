@@ -1,17 +1,12 @@
 #pragma once
 
-#include "engine/core/entities/ArchetypeManager.hpp"
+#include "engine/core/entities/ComponentArray.hpp"
 #include "engine/core/entities/ComponentRegistry.hpp"
 #include "engine/core/entities/Entity.hpp"
 
-#include <unordered_map>
 #include <vector>
-#include <stdexcept>
-#include <cstdint>
 
 namespace parteeengine {
-
-    using Archetype = uint64_t;
 
     class EntityManager {
     public:
@@ -25,13 +20,15 @@ namespace parteeengine {
         template<typename T>
         T& getComponent(Entity entity);
 
-    private:
-        std::vector<EntityId> freeIds;
-        std::vector<Generation> generations;
-        EntityId nextId = 0;
+        template<typename T>
+        ComponentArray<T>& getComponentArray();
 
-        std::vector<Archetype> entityArchetypes;  // Entity ID → archetype bitmask
-        std::unordered_map<Archetype, ArchetypeManager> archetypeData;  // Archetype mask → storage
+    private:
+        std::vector<Generation> generations;  // Generation count for each entity ID
+        std::vector<EntityId> freeIds;  // Reusable entity IDs
+        EntityId nextId = 0;  // Next entity ID to use if no free IDs
+
+        std::unordered_map<ComponentId, std::unique_ptr<VirtualComponentArray>> entityComponents;  // Component ID → packed component array
     };
 
     template<typename T>
@@ -39,22 +36,12 @@ namespace parteeengine {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
-
-        Archetype& archetype = entityArchetypes[entity.id];
-        Archetype newArchetype = archetype | (1ULL << ComponentRegistry::getComponentID<T>());
-
-        // If archetype is changing, move entity to new archetype storage
-        if (newArchetype != archetype) {
-            ArchetypeManager& oldStorage = archetypeData[archetype];
-            ArchetypeManager& newStorage = archetypeData[newArchetype];
-
-            if (archetype != 0) {
-                oldStorage.removeEntity(entity);
-            }
-            newStorage.addComponent<T>(entity, T{}); // Add default component value
-
-            archetype = newArchetype;
+        ComponentId id = ComponentRegistry::getComponentID<T>();
+        if (entityComponents.find(id) == entityComponents.end()) {
+            entityComponents[id] = std::make_unique<ComponentArray<T>>();
         }
+        auto* array = static_cast<ComponentArray<T>*>(entityComponents[id].get());
+        array->registerEntity(entity);
     }
 
     template<typename T>
@@ -62,14 +49,23 @@ namespace parteeengine {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
-
-        Archetype archetype = entityArchetypes[entity.id];
-        Archetype compMask = (1ULL << ComponentRegistry::getComponentID<T>());
-        if ((archetype & compMask) == 0) {
-            throw std::runtime_error("Entity does not have required component");
+        ComponentId id = ComponentRegistry::getComponentID<T>();
+        auto it = entityComponents.find(id);
+        if (it == entityComponents.end()) {
+            throw std::runtime_error("Entity does not have component");
         }
+        auto* array = static_cast<ComponentArray<T>*>(it->second.get());
+        return array->get(entity);
+    }
 
-        return archetypeData[archetype].getComponent<T>(entity.id);
+    template<typename T>
+    ComponentArray<T>& EntityManager::getComponentArray() {
+        ComponentId id = ComponentRegistry::getComponentID<T>();
+        auto it = entityComponents.find(id);
+        if (it == entityComponents.end()) {
+            throw std::runtime_error("No entities have this component");
+        }
+        return *static_cast<ComponentArray<T>*>(it->second.get());
     }
 
 } // namespace parteeengine

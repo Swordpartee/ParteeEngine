@@ -24,7 +24,11 @@ namespace parteeengine {
         // Checks if the given entity is valid (exists and has not been destroyed)
         bool isValidEntity(const Entity& entity) const;
 
+        template<typename T>
+        void addComponent(Entity entity);
+
         void run();
+        void stop();
 
     private:
         bool running = false; // Engine running state
@@ -41,5 +45,10 @@ namespace parteeengine {
     template<EngineModule T>
     T* Engine::getModule() {
         return moduleManager.getModule<T>();
+    }
+
+    template<typename T>
+    void Engine::addComponent(Entity entity) {
+        entityManager.addComponent<T>(entity);
     }
 } // namespace parteeengine

@@ -19,15 +19,20 @@ namespace parteeengine {
     }
 
     void Engine::run() {
-        // Initialize all modules
-        moduleManager.initializeModules({});
+        if (!moduleManager.initializeModules({entityManager})) {
+            return;
+        }
 
-        // Main loop
         running = true;
         while (running) {
-            // Update all modules
-            moduleManager.updateModules({});
+            if (!moduleManager.updateModules({entityManager})) {
+                running = false;
+            }
         }
+    }
+
+    void Engine::stop() {
+        running = false;
     }
 
 } // namespace parteeengine
