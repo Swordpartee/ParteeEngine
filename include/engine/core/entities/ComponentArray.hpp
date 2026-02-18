@@ -37,25 +37,25 @@ namespace parteeengine {
         std::vector<std::pair<Entity, T>> getEntityComponentPairs();
 
     private:
-        std::vector<EntityId> indexToEntity;                   // Index → Entity ID
-        std::unordered_map<EntityId, size_t> entityToIndex;    // Entity ID → index
+        std::vector<Entity> indexToEntity;                   // Index → Entity ID
+        std::unordered_map<Entity, size_t> entityToIndex;    // Entity ID → index
         std::vector<T> components;                             // Component data (packed)
     };
 
     template<typename T>
     void ComponentArray<T>::registerEntity(Entity entity) {
-        if (entityToIndex.contains(entity.id)) {
+        if (entityToIndex.contains(entity)) {
             throw std::runtime_error("Entity already has component");
         }
         size_t index = components.size();
         components.push_back(T());
-        indexToEntity.push_back(entity.id);
-        entityToIndex[entity.id] = index;
+        indexToEntity.push_back(entity);
+        entityToIndex[entity] = index;
     }
 
     template<typename T>
     void ComponentArray<T>::removeEntity(Entity entity) {
-        auto it = entityToIndex.find(entity.id);
+        auto it = entityToIndex.find(entity);
         if (it == entityToIndex.end()) return;
 
         size_t removedIndex = it->second;
@@ -63,9 +63,9 @@ namespace parteeengine {
 
         if (removedIndex != lastIndex) {
             components[removedIndex] = std::move(components[lastIndex]);
-            EntityId movedId = indexToEntity[lastIndex];
-            entityToIndex[movedId] = removedIndex;
-            indexToEntity[removedIndex] = movedId;
+            Entity movedEntity = indexToEntity[lastIndex];
+            entityToIndex[movedEntity] = removedIndex;
+            indexToEntity[removedIndex] = movedEntity;
         }
 
         components.pop_back();
@@ -74,7 +74,7 @@ namespace parteeengine {
     }
     template<typename T>
     T& ComponentArray<T>::get(Entity entity) {
-        auto it = entityToIndex.find(entity.id);
+        auto it = entityToIndex.find(entity);
         if (it == entityToIndex.end()) {
             throw std::runtime_error("Entity does not have component");
         }
@@ -91,7 +91,7 @@ namespace parteeengine {
     std::vector<std::pair<Entity, T>> ComponentArray<T>::getEntityComponentPairs() {
         std::vector<std::pair<Entity, T>> pairs;
         for (size_t i = 0; i < components.size(); ++i) {
-            pairs.emplace_back(Entity{indexToEntity[i], 0}, components[i]);
+            pairs.emplace_back(indexToEntity[i], components[i]);
         }
         return pairs;
     }
