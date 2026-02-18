@@ -31,14 +31,14 @@ namespace ParteeEngine::Rendering {
     };
 
     struct Quad {
-        float x, y;
+        float x = 0.f, y = 0.f;
         float width, height;
         ParteeEngine::Color color;
     };
     using DrawQuadCommand = RenderCommandCRTP<Quad>;
 
     struct Sprite {
-        float x, y;
+        float x = 0.f, y = 0.f;
         float width, height;
         float u1, v1, u2, v2; // Texture coordinates
         ParteeEngine::Color color;

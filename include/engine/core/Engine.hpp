@@ -59,7 +59,6 @@ namespace ParteeEngine {
         }
 
         modules.emplace_back(std::make_unique<T>());
-        modules.back()->initialize(moduleInputs);
     }
 
 } // namespace ParteeEngine

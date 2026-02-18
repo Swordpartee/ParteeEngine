@@ -23,7 +23,6 @@ namespace ParteeEngine {
 
     bool InputSystem::isActive(InputBinding binding) {
         std::lock_guard lock(devicesMutex);
-        auto device = devices.find(binding.deviceID);
         return isActiveInternal(binding);
        
     }

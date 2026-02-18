@@ -4,7 +4,7 @@
 #include "engine/rendering/renderers/OpenGLRenderer.hpp"
 #include "engine/physics/PhysicsModule.hpp"
 
-#include "engine/rendering/components/RenderComponent2d.hpp"
+#include "engine/rendering/components/RenderComponent.hpp"
 #include "engine/rendering/core/RenderCommand.hpp"
 
 #include "interpreter/Lexer.hpp"
@@ -23,7 +23,7 @@ bool runEngine() {
     engine.addModule<Rendering::RenderModule2d<Rendering::OpenGLRenderer>>();
     engine.addModule<PhysicsModule>();
 
-    Entity &entity = engine.createEntity().with<Rendering::RenderComponent2d<Rendering::DrawQuadCommand>>([](auto &comp) {
+    Entity &entity = engine.createEntity().with<Rendering::RenderComponent<Rendering::DrawQuadCommand>>([](auto &comp) {
         comp.getCommand() = Rendering::DrawQuadCommand(
             Rendering::Quad{
                 .x = 100.f,
@@ -33,6 +33,11 @@ bool runEngine() {
                 .color = {255, 0, 0, 255}
             }
         );
+    })
+    .with<UpdateComponent>([](auto &comp) {
+        comp.setUpdateFunction([](float dt, Entity* entity) {
+            
+        });
     });
 
     engine.run();

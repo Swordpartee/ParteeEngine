@@ -8,10 +8,10 @@ namespace ParteeEngine::Rendering {
     concept IsRenderCommand = std::is_base_of_v<RenderCommand, T>;
 
     template<IsRenderCommand T>
-    class RenderComponent2d : public ParteeEngine::Component {
+    class RenderComponent : public ParteeEngine::Component {
     public:
-        RenderComponent2d() = default;
-        ~RenderComponent2d() override = default;
+        RenderComponent() = default;
+        ~RenderComponent() override = default;
 
         void requireDependencies() override {}
 

@@ -80,7 +80,7 @@ namespace ParteeEngine::Rendering {
                 const DrawQuadCommand* drawCmd = static_cast<const DrawQuadCommand*>(cmdPtr.get());
                 const Quad& quad = drawCmd->data;
 
-                glColor4ub(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
+                glColor4f(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
                 glBegin(GL_QUADS);
                 glVertex3f(quad.x, quad.y, 0.0f);
                 glVertex3f(quad.x + quad.width, quad.y, 0.0f);
@@ -92,7 +92,7 @@ namespace ParteeEngine::Rendering {
                 const DrawSpriteCommand* drawCmd = static_cast<const DrawSpriteCommand*>(cmdPtr.get());
                 const Sprite& sprite = drawCmd->data;
 
-                glColor4ub(sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a);
+                glColor4f(sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a);
                 glBegin(GL_QUADS);
                 glVertex3f(sprite.x, sprite.y, 0.0f);
                 glVertex3f(sprite.x + sprite.width, sprite.y, 0.0f);

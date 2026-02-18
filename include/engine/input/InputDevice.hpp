@@ -14,7 +14,7 @@ namespace ParteeEngine
 
         virtual DeviceTypeID getDeviceTypeID() const = 0;
 
-        void poll() {};
+        virtual void poll() = 0;
 
         virtual bool isActive(InputBinding binding) const = 0;
 

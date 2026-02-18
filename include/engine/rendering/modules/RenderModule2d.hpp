@@ -7,7 +7,7 @@
 #include "engine/rendering/renderers/IRenderer.hpp"
 #include "engine/rendering/core/RenderFrame.hpp"
 #include "engine/core/entities/Entity.hpp"
-#include "engine/rendering/components/RenderComponent2d.hpp"
+#include "engine/rendering/components/RenderComponent.hpp"
 #include "engine/rendering/core/RenderCommand.hpp"
 
 namespace ParteeEngine::Rendering {
@@ -33,12 +33,12 @@ namespace ParteeEngine::Rendering {
         bool update(const ParteeEngine::ModuleUpdateInputs& inputs) override {
             RenderFrame frame;
             for (const auto& entity : inputs.entities) {
-                if (entity.hasComponent<RenderComponent2d<DrawQuadCommand>>()) {
-                    const auto& comp = entity.getComponent<RenderComponent2d<DrawQuadCommand>>();
+                if (entity.hasComponent<RenderComponent<DrawQuadCommand>>()) {
+                    const auto& comp = entity.getComponent<RenderComponent<DrawQuadCommand>>();
                     frame.commands.push_back(std::make_unique<DrawQuadCommand>(comp->getCommand()));
                 }
-                if (entity.hasComponent<RenderComponent2d<DrawSpriteCommand>>()) {
-                    const auto& comp = entity.getComponent<RenderComponent2d<DrawSpriteCommand>>();
+                if (entity.hasComponent<RenderComponent<DrawSpriteCommand>>()) {
+                    const auto& comp = entity.getComponent<RenderComponent<DrawSpriteCommand>>();
                     frame.commands.push_back(std::make_unique<DrawSpriteCommand>(comp->getCommand()));
                 }
             }

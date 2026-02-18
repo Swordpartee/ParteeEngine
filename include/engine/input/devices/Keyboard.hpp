@@ -22,9 +22,9 @@ namespace ParteeEngine {
     
     namespace Bindings {
         inline constexpr InputBinding KeyA{Keyboard::typeID, 'A'};
-        inline constexpr InputBinding KeyD{Keyboard::typeID, 'B'};
+        inline constexpr InputBinding KeyB{Keyboard::typeID, 'B'};
         inline constexpr InputBinding KeyC{Keyboard::typeID, 'C'};
-        inline constexpr InputBinding KeyB{Keyboard::typeID, 'D'};
+        inline constexpr InputBinding KeyD{Keyboard::typeID, 'D'};
         inline constexpr InputBinding KeyE{Keyboard::typeID, 'E'};
         inline constexpr InputBinding KeyF{Keyboard::typeID, 'F'};
         inline constexpr InputBinding KeyG{Keyboard::typeID, 'G'};
