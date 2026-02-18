@@ -8,7 +8,7 @@
 namespace parteeengine::rendering {
 
     struct RenderFrame {
-        std::vector<RenderComponent*> commands;
+        std::vector<std::unique_ptr<RenderComponent>> commands;  // Store copies of components
     };
 
 } // namespace parteeengine::rendering

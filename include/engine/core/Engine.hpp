@@ -6,8 +6,6 @@
 
 namespace parteeengine {
 
-    using TransformComponent = Vector3;
-
     class Engine {
     public:
         Engine();

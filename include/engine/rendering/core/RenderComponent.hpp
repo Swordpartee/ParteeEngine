@@ -2,6 +2,7 @@
 
 #include "engine/util/Color.hpp"
 #include "engine/core/entities/Component.hpp"
+#include "engine/util/Vector3.hpp"
 
 #include <typeindex>
 
@@ -13,20 +14,18 @@ namespace parteeengine::rendering {
         virtual std::type_index getType() const = 0;
     };
 
-    struct Quad: public RenderComponent {
-        float x = 0.f, y = 0.f;
+    struct QuadRenderComponent: public RenderComponent {
+        Vector3 position{0.f, 0.f, 0.f};
         float width, height;
         parteeengine::Color color;
 
         std::type_index getType() const override {
-            return typeid(Quad);
+            return typeid(QuadRenderComponent);
         }
 
-        Quad() = default;
-        Quad(float w, float h, const parteeengine::Color& col = {1.f, 1.f, 1.f, 1.f}) :
+        QuadRenderComponent() = default;
+        QuadRenderComponent(float w, float h, const parteeengine::Color& col = {1.f, 1.f, 1.f, 1.f}) :
             width(w), height(h), color(col) {}
     };
-    using QuadRenderComponent = Quad;
-
 
 } // namespace parteeengine::rendering

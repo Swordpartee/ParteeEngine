@@ -23,6 +23,9 @@ namespace parteeengine {
         template<typename T>
         std::vector<T>& getComponentArray();
 
+        template<typename T>
+        std::vector<std::pair<Entity, T>> getEntityComponentPairs();
+
     private:
         std::vector<Generation> generations;  // Generation count for each entity ID
         std::vector<EntityId> freeIds;  // Reusable entity IDs
@@ -69,6 +72,18 @@ namespace parteeengine {
             return emptyVector; // Return empty vector if no entities have this component
         }
         return static_cast<ComponentArray<T>*>(it->second.get())->getComponents();
+    }
+
+    template<typename T>
+    std::vector<std::pair<Entity, T>> EntityManager::getEntityComponentPairs() {
+        ComponentId id = ComponentRegistry::getComponentID<T>();
+        auto it = entityComponents.find(id);
+        if (it == entityComponents.end()) {
+            // throw std::runtime_error("No entities have this component");
+            static std::vector<std::pair<Entity, T>> emptyVector;
+            return emptyVector; // Return empty vector if no entities have this component
+        }
+        return static_cast<ComponentArray<T>*>(it->second.get())->getEntityComponentPairs();
     }
 
 } // namespace parteeengine

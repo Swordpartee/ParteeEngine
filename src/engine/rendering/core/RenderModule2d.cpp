@@ -1,6 +1,7 @@
 #include "engine/rendering/core/RenderModule2d.hpp"
 
 #include "engine/rendering/renderers/OpenGLRenderer.hpp"
+#include "engine/core/entities/TransformComponent2d.hpp"
 
 namespace parteeengine::rendering {
 
@@ -17,8 +18,10 @@ namespace parteeengine::rendering {
 
     bool RenderModule2d::update(const ModuleInput& input) {
         RenderFrame frame;
-        for (auto& component : input.entityManager.getComponentArray<QuadRenderComponent>()) {
-            frame.commands.emplace_back(&component);
+        for (auto& [entity, component] : input.entityManager.getEntityComponentPairs<QuadRenderComponent>()) {
+            TransformComponent2d position = input.entityManager.getComponent<TransformComponent2d>(entity);
+            component.position = position;
+            frame.commands.emplace_back(std::make_unique<QuadRenderComponent>(component));  // Copy, don't store pointer
         }
 
         return renderer->render(frame) && window->swapBuffers() && window->pollEvents();
