@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IRenderer.hpp"
+#include "engine/rendering/renderers/IRenderer.hpp"
 #include "engine/rendering/window/IWindow.hpp"
 #include "engine/rendering/core/RenderFrame.hpp"
 
-namespace ParteeEngine::Rendering {
+namespace parteeengine::rendering {
 
     class OpenGLRenderer : public IRenderer {
     public:
@@ -18,4 +18,4 @@ namespace ParteeEngine::Rendering {
         IWindow* windowPtr = nullptr;
     };
 
-} // namespace ParteeEngine::Rendering
+} // namespace parteeengine::rendering

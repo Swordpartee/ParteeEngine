@@ -2,8 +2,11 @@
 
 #include "engine/core/modules/ModuleManager.hpp"
 #include "engine/core/entities/EntityManager.hpp"
+#include "engine/util/Vector3.hpp"
 
 namespace parteeengine {
+
+    using TransformComponent = Vector3;
 
     class Engine {
     public:
@@ -25,7 +28,7 @@ namespace parteeengine {
         bool isValidEntity(const Entity& entity) const;
 
         template<typename T>
-        void addComponent(Entity entity);
+        T& addComponent(Entity entity);
 
         void run();
         void stop();
@@ -48,7 +51,7 @@ namespace parteeengine {
     }
 
     template<typename T>
-    void Engine::addComponent(Entity entity) {
-        entityManager.addComponent<T>(entity);
+    T& Engine::addComponent(Entity entity) {
+        return entityManager.addComponent<T>(entity);
     }
 } // namespace parteeengine

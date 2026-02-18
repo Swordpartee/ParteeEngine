@@ -9,13 +9,18 @@
 
 namespace parteeengine::rendering {
 
+    // Windows 10+ native window implementation using Win32 API.
+    // Manages HWND, device context, and OpenGL rendering context.
     class W32Window : public IWindow {
     public:
         W32Window();
         ~W32Window() override;
 
         bool create(const WindowConfig& config) override;
+        bool create() override;
         bool destroy() override;
+        
+        void setConfig(const WindowConfig& config) override;
         bool show() override;
         bool hide() override;
 
@@ -36,9 +41,7 @@ namespace parteeengine::rendering {
         HGLRC hglrc = nullptr;
 
         WindowConfig config = {};
-
         WindowEventCallback eventCallback;
-
     };
 
 } // namespace parteeengine::rendering

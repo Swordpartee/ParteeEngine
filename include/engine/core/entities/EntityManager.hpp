@@ -15,13 +15,13 @@ namespace parteeengine {
         bool isValid(const Entity& entity) const;
 
         template<typename T>
-        void addComponent(Entity entity);
+        T& addComponent(Entity entity);
 
         template<typename T>
         T& getComponent(Entity entity);
 
         template<typename T>
-        ComponentArray<T>& getComponentArray();
+        std::vector<T>& getComponentArray();
 
     private:
         std::vector<Generation> generations;  // Generation count for each entity ID
@@ -32,7 +32,7 @@ namespace parteeengine {
     };
 
     template<typename T>
-    void EntityManager::addComponent(Entity entity) {
+    T& EntityManager::addComponent(Entity entity) {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
@@ -42,6 +42,7 @@ namespace parteeengine {
         }
         auto* array = static_cast<ComponentArray<T>*>(entityComponents[id].get());
         array->registerEntity(entity);
+        return array->get(entity);
     }
 
     template<typename T>
@@ -59,13 +60,15 @@ namespace parteeengine {
     }
 
     template<typename T>
-    ComponentArray<T>& EntityManager::getComponentArray() {
+    std::vector<T>& EntityManager::getComponentArray() {
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
-            throw std::runtime_error("No entities have this component");
+            // throw std::runtime_error("No entities have this component");
+            static std::vector<T> emptyVector;
+            return emptyVector; // Return empty vector if no entities have this component
         }
-        return *static_cast<ComponentArray<T>*>(it->second.get());
+        return static_cast<ComponentArray<T>*>(it->second.get())->getComponents();
     }
 
 } // namespace parteeengine

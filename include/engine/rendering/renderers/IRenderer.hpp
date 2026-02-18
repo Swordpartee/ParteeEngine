@@ -2,7 +2,7 @@
 
 #include "engine/rendering/core/RenderFrame.hpp"
 
-namespace ParteeEngine::Rendering {
+namespace parteeengine::rendering {
 
     class IWindow;
 
@@ -17,4 +17,5 @@ namespace ParteeEngine::Rendering {
     protected:
         IRenderer() = default;
     };
-}
+    
+} // namespace parteeengine::rendering

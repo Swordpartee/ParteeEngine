@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ParteeEngine {
+namespace parteeengine {
 
     struct Color {
         float r = 1.0f;
@@ -13,4 +13,4 @@ namespace ParteeEngine {
             : r(red), g(green), b(blue), a(alpha) {}
     };
 
-} // namespace ParteeEngine
+} // namespace parteeengine

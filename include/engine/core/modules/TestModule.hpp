@@ -10,7 +10,9 @@ namespace parteeengine {
 
     class TestModule : public Module {
     public:
-        bool initialize([[maybe_unused]] const ModuleInput& input) override {
+        
+        bool initialize(const ModuleInput& input) override {
+            (void)input;
             std::cout << "TestModule initialized!" << std::endl;
             return true;
         }

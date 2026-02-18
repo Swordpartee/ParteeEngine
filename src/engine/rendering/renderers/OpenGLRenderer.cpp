@@ -8,7 +8,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace ParteeEngine::Rendering {
+namespace parteeengine::rendering {
 
     bool OpenGLRenderer::initialize(IWindow& window) {
         windowPtr = &window;
@@ -76,9 +76,9 @@ namespace ParteeEngine::Rendering {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const auto& cmdPtr : frame.commands) {
-            if (cmdPtr->type() == typeid(DrawQuadCommand)) {
-                const DrawQuadCommand* drawCmd = static_cast<const DrawQuadCommand*>(cmdPtr.get());
-                const Quad& quad = drawCmd->data;
+            if (cmdPtr->getType() == typeid(QuadRenderComponent)) {
+                const QuadRenderComponent* quadComponent = static_cast<const QuadRenderComponent*>(cmdPtr);
+                const Quad& quad = *quadComponent;
 
                 glColor4f(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
                 glBegin(GL_QUADS);
@@ -88,21 +88,9 @@ namespace ParteeEngine::Rendering {
                 glVertex3f(quad.x, quad.y + quad.height, 0.0f);
                 glEnd();
             }
-            else if (cmdPtr->type() == typeid(DrawSpriteCommand)) {
-                const DrawSpriteCommand* drawCmd = static_cast<const DrawSpriteCommand*>(cmdPtr.get());
-                const Sprite& sprite = drawCmd->data;
-
-                glColor4f(sprite.color.r, sprite.color.g, sprite.color.b, sprite.color.a);
-                glBegin(GL_QUADS);
-                glVertex3f(sprite.x, sprite.y, 0.0f);
-                glVertex3f(sprite.x + sprite.width, sprite.y, 0.0f);
-                glVertex3f(sprite.x + sprite.width, sprite.y + sprite.height, 0.0f);
-                glVertex3f(sprite.x, sprite.y + sprite.height, 0.0f);
-                glEnd();
-            }
         }
 
         return true;
     }
 
-} // namespace ParteeEngine::Rendering
+} // namespace parteeengine::rendering

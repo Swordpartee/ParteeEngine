@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace ParteeEngine {
+namespace parteeengine {
     
     // Header-only 3D vector utility
     struct Vector3 {
@@ -99,4 +99,4 @@ namespace ParteeEngine {
     inline Vector3 operator*(float scalar, const Vector3& v) {
         return v * scalar;
     }
-} // namespace ParteeEngine
+} // namespace parteeengine
