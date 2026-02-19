@@ -7,6 +7,7 @@ namespace parteeengine {
     // Data passed to modules each frame.
     struct ModuleInput {
         EntityManager& entityManager;
+        float dt = 0; // Delta time since last frame
     };
 
     // Base class for all engine modules. Modules are the primary extension point

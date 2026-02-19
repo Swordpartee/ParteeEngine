@@ -34,7 +34,7 @@ namespace parteeengine {
         std::vector<T>& getComponents();
         const std::vector<T>& getComponents() const;
         
-        std::vector<std::pair<Entity, T>> getEntityComponentPairs();
+        std::vector<std::pair<Entity, T&>> getEntityComponentPairs();
 
     private:
         std::vector<Entity> indexToEntity;                   // Index → Entity ID
@@ -72,6 +72,7 @@ namespace parteeengine {
         indexToEntity.pop_back();
         entityToIndex.erase(it);
     }
+    
     template<typename T>
     T& ComponentArray<T>::get(Entity entity) {
         auto it = entityToIndex.find(entity);
@@ -88,8 +89,8 @@ namespace parteeengine {
     const std::vector<T>& ComponentArray<T>::getComponents() const { return components; }
 
     template<typename T>
-    std::vector<std::pair<Entity, T>> ComponentArray<T>::getEntityComponentPairs() {
-        std::vector<std::pair<Entity, T>> pairs;
+    std::vector<std::pair<Entity, T&>> ComponentArray<T>::getEntityComponentPairs() {
+        std::vector<std::pair<Entity, T&>> pairs;
         for (size_t i = 0; i < components.size(); ++i) {
             pairs.emplace_back(indexToEntity[i], components[i]);
         }

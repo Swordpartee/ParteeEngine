@@ -22,9 +22,9 @@ namespace parteeengine {
 
         TransformComponent2d() = default;
         TransformComponent2d(float x, float y) :
-            transform(x, y) {};
+            transform(x, y) {}
         TransformComponent2d(const Vector2& pos, float rot, const Vector2& scl) :
-            transform(pos, rot, scl) {};
+            transform(pos, rot, scl) {}
 
     };
 }

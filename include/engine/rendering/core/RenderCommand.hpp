@@ -2,6 +2,8 @@
 
 #include "engine/rendering/core/RenderComponent.hpp"
 
+#include <typeindex>
+
 namespace parteeengine::rendering {
 
     struct RenderCommand {
@@ -11,10 +13,11 @@ namespace parteeengine::rendering {
     };
 
     struct QuadRenderCommand : public RenderCommand {
-        RenderQuad quad;
+        Transform2d quad;
+        parteeengine::Color color;
 
         QuadRenderCommand() = default;
-        QuadRenderCommand(const RenderQuad& quad) : quad(quad) {}
+        QuadRenderCommand(const Transform2d& quad, const parteeengine::Color& color) : quad(quad), color(color) {}
 
         std::type_index getType() const override {
             return typeid(QuadRenderCommand);

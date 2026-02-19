@@ -67,20 +67,16 @@ namespace parteeengine::rendering {
     }
 
     void W32Window::setConfig(const WindowConfig& newConfig) {
-        if ((newConfig.width != config.width || newConfig.height != config.height) && hwnd) {
-            config = newConfig;
-            SetWindowPos(hwnd, nullptr, 0, 0, config.width, config.height, SWP_NOMOVE | SWP_NOZORDER);
-        }
-        if (strcmp(newConfig.title, config.title) != 0 && hwnd) {
-            config.title = newConfig.title;
-            SetWindowText(hwnd, config.title);
+        config = newConfig;
+        
+        if (hwnd) {
+            UpdateWindow(hwnd);
         }
     }
+    
 
     bool W32Window::show() {
-        if (!ShowWindow(hwnd, SW_SHOW)) {
-            return false;
-        }
+        ShowWindow(hwnd, SW_SHOW);
         return UpdateWindow(hwnd);
     }
 

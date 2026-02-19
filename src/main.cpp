@@ -6,19 +6,21 @@
 #include "engine/rendering/renderers/OpenGLRenderer.hpp"
 #include "engine/core/entities/TransformComponent2d.hpp"
 
+using namespace parteeengine;
+
 int main() {
-    parteeengine::Engine engine;
+    Engine engine;
 
     // engine.createModule<parteeengine::TestModule>();
-    engine.createModule<parteeengine::rendering::RenderModule2d>()
-        .config<parteeengine::rendering::OpenGLRenderer>({800, 600, "ParteeEngine"});
+    engine.createModule<rendering::RenderModule2d>()
+        .config<rendering::OpenGLRenderer>({800, 600, "ParteeEngine"});
 
-    parteeengine::Entity entity = engine.createEntity();
+    Entity entity = engine.createEntity();
     // engine.addComponent<parteeengine::TestComponent>(entity);
-    engine.addComponent<parteeengine::TransformComponent2d>(entity) = 
+    engine.addComponent<TransformComponent2d>(entity) = 
         {200.f, 200.f};
-    engine.addComponent<parteeengine::rendering::QuadRenderComponent>(entity) = 
-        {100.f, 100.f, {255, 0, 0}};
+    engine.addComponent<rendering::QuadRenderComponent>(entity) = 
+        {{255, 0, 0}};
 
     engine.run();
 

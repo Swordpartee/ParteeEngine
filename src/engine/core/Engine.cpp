@@ -2,7 +2,7 @@
 
 namespace parteeengine {
 
-    Engine::Engine() : entityManager() {}
+    Engine::Engine() : moduleManager(), entityManager(), moduleInput(entityManager) {}
 
     Engine::~Engine() {}
 
@@ -19,13 +19,14 @@ namespace parteeengine {
     }
 
     void Engine::run() {
-        if (!moduleManager.initializeModules({entityManager})) {
+        if (!moduleManager.initializeModules(moduleInput)) {
             return;
         }
 
         running = true;
         while (running) {
-            if (!moduleManager.updateModules({entityManager})) {
+            moduleInput.dt = 0.016f; // Placeholder for delta time calculation
+            if (!moduleManager.updateModules(moduleInput)) {
                 running = false;
             }
         }

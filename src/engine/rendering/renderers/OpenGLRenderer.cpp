@@ -77,15 +77,14 @@ namespace parteeengine::rendering {
 
         for (const auto& command : frame.commands) {
             if (command->getType() == typeid(QuadRenderCommand)) {
-                const auto* quadCmd = static_cast<const QuadRenderCommand*>(command.get());
-                const RenderQuad& quad = quadCmd->quad;
+                const auto* quad = static_cast<const QuadRenderCommand*>(command.get());
 
-                glColor4f(quad.color.r, quad.color.g, quad.color.b, quad.color.a);
+                glColor4f(quad->color.r, quad->color.g, quad->color.b, quad->color.a);
                 glBegin(GL_QUADS);
-                glVertex2f(quad.transform.position.x, quad.transform.position.y);
-                glVertex2f(quad.transform.position.x + quad.transform.scale.x, quad.transform.position.y);
-                glVertex2f(quad.transform.position.x + quad.transform.scale.x, quad.transform.position.y + quad.transform.scale.y);
-                glVertex2f(quad.transform.position.x, quad.transform.position.y + quad.transform.scale.y);
+                glVertex2f(quad->quad.position.x, quad->quad.position.y);
+                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y);
+                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y + quad->quad.scale.y);
+                glVertex2f(quad->quad.position.x, quad->quad.position.y + quad->quad.scale.y);
                 glEnd();
 
             }

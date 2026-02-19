@@ -5,9 +5,7 @@
 
 namespace parteeengine::rendering {
 
-    RenderModule2d::RenderModule2d() : window(IWindow::createPlatformWindow()), renderer(std::make_unique<OpenGLRenderer>()) {
-
-    };
+    RenderModule2d::RenderModule2d() : window(IWindow::createPlatformWindow()) {};
 
     bool RenderModule2d::initialize([[maybe_unused]]const ModuleInput& input) {
         window->create();
@@ -17,13 +15,13 @@ namespace parteeengine::rendering {
 
     bool RenderModule2d::update(const ModuleInput& input) {
         RenderFrame frame;
-        for (auto& [entity, component] : input.entityManager.getEntityComponentPairs<QuadRenderComponent>()) {
+        for (auto& [entity, renderComponent] : input.entityManager.getEntityComponentPairs<QuadRenderComponent>()) {
             TransformComponent2d* position = input.entityManager.getComponent<TransformComponent2d>(entity);
-            if (position) {
-                component.quad.transform = position->transform;
+            if (!position) {
+                continue;
             }
 
-            frame.commands.push_back(std::make_unique<QuadRenderCommand>(component.quad));
+            frame.commands.push_back(std::make_unique<QuadRenderCommand>(position->transform, renderComponent.color));
         }
 
         return renderer->render(frame) && window->swapBuffers() && window->pollEvents();

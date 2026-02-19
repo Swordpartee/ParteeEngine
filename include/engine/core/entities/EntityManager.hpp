@@ -26,10 +26,13 @@ namespace parteeengine {
         T* getComponent(Entity entity);
 
         template<ComponentType T>
+        bool hasComponent(Entity entity);
+
+        template<ComponentType T>
         std::vector<T>& getComponentArray();
 
         template<ComponentType T>
-        std::vector<std::pair<Entity, T>> getEntityComponentPairs();
+        std::vector<std::pair<Entity, T&>> getEntityComponentPairs();
 
 
     private:
@@ -44,6 +47,9 @@ namespace parteeengine {
     T& EntityManager::addComponent(Entity entity) {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
+        }
+        if (hasComponent<T>(entity)) {
+            throw std::runtime_error("Entity already has component");
         }
         ComponentId id = ComponentRegistry::getComponentID<T>();
         if (entityComponents.find(id) == entityComponents.end()) {
@@ -69,6 +75,25 @@ namespace parteeengine {
     }
 
     template<ComponentType T>
+    bool EntityManager::hasComponent(Entity entity) {
+        if (!isValid(entity)) {
+            throw std::runtime_error("Invalid entity");
+        }
+        ComponentId id = ComponentRegistry::getComponentID<T>();
+        auto it = entityComponents.find(id);
+        if (it == entityComponents.end()) {
+            return false;
+        }
+        auto* array = static_cast<ComponentArray<T>*>(it->second.get());
+        try {
+            array->get(entity);
+            return true;
+        } catch (const std::runtime_error&) {
+            return false;
+        }
+    }   
+
+    template<ComponentType T>
     std::vector<T>& EntityManager::getComponentArray() {
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);
@@ -81,12 +106,12 @@ namespace parteeengine {
     }
 
     template<ComponentType T>
-    std::vector<std::pair<Entity, T>> EntityManager::getEntityComponentPairs() {
+    std::vector<std::pair<Entity, T&>> EntityManager::getEntityComponentPairs() {
         ComponentId id = ComponentRegistry::getComponentID<T>();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
             // throw std::runtime_error("No entities have this component");
-            static std::vector<std::pair<Entity, T>> emptyVector;
+            static std::vector<std::pair<Entity, T&>> emptyVector;
             return emptyVector; // Return empty vector if no entities have this component
         }
         return static_cast<ComponentArray<T>*>(it->second.get())->getEntityComponentPairs();

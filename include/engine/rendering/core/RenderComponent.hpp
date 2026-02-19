@@ -9,20 +9,16 @@
 namespace parteeengine::rendering {
 
     struct RenderComponent: public Component {
-        virtual ~RenderComponent() = default;
-    };
-
-    struct RenderQuad {
-        Transform2d transform;
-        parteeengine::Color color;
+        RenderComponent() = default;
     };
 
     struct QuadRenderComponent: public RenderComponent {
-        RenderQuad quad;
+        parteeengine::Color color{1.f, 1.f, 1.f, 1.f};
 
         QuadRenderComponent() = default;
-        QuadRenderComponent(float w, float h, const parteeengine::Color& col = {1.f, 1.f, 1.f, 1.f}) :
-            quad(Transform2d({0.f, 0.f}, 0.f, {w, h}), col) {}
+        QuadRenderComponent(float r, float g, float b, float a = 1.f) : color(r, g, b, a) {}
+        QuadRenderComponent(const parteeengine::Color& col) :
+            color(col) {}
     };
 
 } // namespace parteeengine::rendering
