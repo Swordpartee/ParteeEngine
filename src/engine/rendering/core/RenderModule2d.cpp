@@ -14,7 +14,9 @@ namespace parteeengine::rendering {
     };
 
     bool RenderModule2d::update(const ModuleInput& input) {
-        RenderFrame frame;
+        // Clear from previous frame and reuse allocated memory
+        frame.commands.clear();
+        
         for (auto& [entity, renderComponent] : input.entityManager.getEntityComponentPairs<QuadRenderComponent>()) {
             TransformComponent2d* position = input.entityManager.getComponent<TransformComponent2d>(entity);
             if (!position) {

@@ -2,7 +2,7 @@
 
 #include "engine/core/modules/ModuleManager.hpp"
 #include "engine/core/entities/EntityManager.hpp"
-#include "engine/util/Vector3.hpp"
+#include "engine/input/InputSystem.hpp"
 
 namespace parteeengine {
 

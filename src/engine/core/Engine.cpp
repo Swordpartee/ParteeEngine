@@ -29,6 +29,8 @@ namespace parteeengine {
             if (!moduleManager.updateModules(moduleInput)) {
                 running = false;
             }
+
+            input::InputSystem::poll();
         }
     }
 
