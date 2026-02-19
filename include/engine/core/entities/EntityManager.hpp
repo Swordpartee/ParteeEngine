@@ -1,17 +1,19 @@
 #pragma once
 
 #include "engine/core/entities/ComponentArray.hpp"
-#include "engine/core/entities/ComponentRegistry.hpp"
 #include "engine/core/entities/Entity.hpp"
 #include "engine/core/entities/Component.hpp"
 
 #include <vector>
+#include <unordered_map>
+#include <stdexcept>
+#include <typeindex>
 
 namespace parteeengine {
 
     // Component concept
     template<typename T>
-    concept ComponentType = std::is_base_of_v<Component, T>;
+    concept ComponentType = std::is_base_of_v<VirtualComponent, T>;
 
     class EntityManager {
     public:
@@ -40,7 +42,7 @@ namespace parteeengine {
         std::vector<EntityId> freeIds;  // Reusable entity IDs
         EntityId nextId = 0;  // Next entity ID to use if no free IDs
 
-        std::unordered_map<ComponentId, std::unique_ptr<VirtualComponentArray>> entityComponents;  // Component ID → packed component array
+        std::unordered_map<std::type_index, std::unique_ptr<VirtualComponentArray>> entityComponents;  // Component ID → packed component array
     };
 
     template<ComponentType T>
@@ -51,7 +53,7 @@ namespace parteeengine {
         if (hasComponent<T>(entity)) {
             throw std::runtime_error("Entity already has component");
         }
-        ComponentId id = ComponentRegistry::getComponentID<T>();
+        std::type_index id = T::getType();
         if (entityComponents.find(id) == entityComponents.end()) {
             entityComponents[id] = std::make_unique<ComponentArray<T>>();
         }
@@ -65,7 +67,7 @@ namespace parteeengine {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
-        ComponentId id = ComponentRegistry::getComponentID<T>();
+        std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
             return nullptr; // Return nullptr if entity doesn't have this component
@@ -79,7 +81,7 @@ namespace parteeengine {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
-        ComponentId id = ComponentRegistry::getComponentID<T>();
+        std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
             return false;
@@ -95,7 +97,7 @@ namespace parteeengine {
 
     template<ComponentType T>
     std::vector<T>& EntityManager::getComponentArray() {
-        ComponentId id = ComponentRegistry::getComponentID<T>();
+        std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
             // throw std::runtime_error("No entities have this component");
@@ -107,7 +109,7 @@ namespace parteeengine {
 
     template<ComponentType T>
     std::vector<std::pair<Entity, T&>> EntityManager::getEntityComponentPairs() {
-        ComponentId id = ComponentRegistry::getComponentID<T>();
+        std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
             // throw std::runtime_error("No entities have this component");

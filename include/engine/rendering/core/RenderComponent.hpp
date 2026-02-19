@@ -8,7 +8,7 @@
 
 namespace parteeengine::rendering {
 
-    struct RenderComponent: public Component {
+    struct RenderComponent: public ComponentCRTP<RenderComponent> {
         RenderComponent() = default;
     };
 

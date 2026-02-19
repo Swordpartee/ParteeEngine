@@ -17,7 +17,7 @@ namespace parteeengine {
             position(pos), rotation(rot), scale(scl) {}
     };
 
-    struct TransformComponent2d: public Component {
+    struct TransformComponent2d: public ComponentCRTP<TransformComponent2d> {
         Transform2d transform;
 
         TransformComponent2d() = default;

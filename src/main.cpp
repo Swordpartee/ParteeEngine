@@ -1,12 +1,13 @@
 #include "engine/core/Engine.hpp"
-#include "engine/core/modules/TestModule.hpp"
-#include "engine/core/entities/TestComponent.hpp"
-#include "engine/rendering/core/RenderModule2d.hpp"
-#include "engine/rendering/core/RenderComponent.hpp"
-#include "engine/rendering/renderers/OpenGLRenderer.hpp"
-#include "engine/core/entities/TransformComponent2d.hpp"
+
 #include "engine/input/InputSystem.hpp"
 #include "engine/input/devices/Keyboard.hpp"
+
+#include "engine/rendering/core/RenderModule2d.hpp"
+#include "engine/rendering/renderers/OpenGLRenderer.hpp"
+
+#include "engine/rendering/core/RenderComponent.hpp"
+#include "engine/core/entities/TransformComponent2d.hpp"
 
 using namespace parteeengine;
 
