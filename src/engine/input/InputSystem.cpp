@@ -1,8 +1,5 @@
 #include "engine/input/InputSystem.hpp"
 
-// #include "engine/events/EventBus.hpp"
-#include "engine/input/InputEvent.hpp"
-
 namespace parteeengine::input {
 
     void InputSystem::poll() {
