@@ -5,8 +5,6 @@
 #endif
 #include <windows.h>
 #include <GL/gl.h>
-#include <cmath>
-#include <algorithm>
 
 namespace parteeengine::rendering {
 

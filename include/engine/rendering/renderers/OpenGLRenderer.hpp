@@ -4,6 +4,12 @@
 #include "engine/rendering/window/IWindow.hpp"
 #include "engine/rendering/core/RenderFrame.hpp"
 
+#include <windows.h>
+#include <GL/gl.h>
+#include <cmath>
+#include <algorithm>
+#include <stdexcept>
+
 namespace parteeengine::rendering {
 
     class OpenGLRenderer : public IRenderer {
