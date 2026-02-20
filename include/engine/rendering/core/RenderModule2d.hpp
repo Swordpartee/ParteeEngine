@@ -30,7 +30,7 @@ namespace parteeengine::rendering {
     private:
         std::unique_ptr<IWindow> window;
         std::unique_ptr<IRenderer> renderer;
-        RenderFrame currentFrame;
+        RenderFrame frame;  // Reused each frame instead of allocating new one
     };
 
     template<IsRenderer T>
