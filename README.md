@@ -4,3 +4,6 @@
     - Refactor OpenGLRenderer to use VAB and VAOs
     - Implement physics and collisions
     - Implement eventBus
+    - Rename ComponentArray to ComponentBucket
+    - Rename CRTP classes
+    - Make component a generic base class, any data structure can "become" a component
