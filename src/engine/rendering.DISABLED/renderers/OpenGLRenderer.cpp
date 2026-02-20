@@ -67,28 +67,5 @@ namespace parteeengine::rendering {
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         return true;
     }
-
-    bool OpenGLRenderer::render(RenderFrame& frame) {
-        // Clear the screen
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        for (const auto& command : frame.commands) {
-            if (command->getType() == typeid(QuadRenderCommand)) {
-                const auto* quad = static_cast<const QuadRenderCommand*>(command.get());
-
-                glColor4f(quad->color.r, quad->color.g, quad->color.b, quad->color.a);
-                glBegin(GL_QUADS);
-                glVertex2f(quad->quad.position.x, quad->quad.position.y);
-                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y);
-                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y + quad->quad.scale.y);
-                glVertex2f(quad->quad.position.x, quad->quad.position.y + quad->quad.scale.y);
-                glEnd();
-
-            }
-        }
-
-        return true;
-    }
-
+    
 } // namespace parteeengine::rendering
