@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/rendering/window/IWindow.hpp"
+#include "engine/rendering/windows/IWindow.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -15,6 +15,7 @@ namespace parteeengine::rendering {
         ~W32Window() override;
 
         bool create(const WindowConfig& config) override;
+        bool create() override;
         bool destroy() override;
         bool show() override;
         bool hide() override;
@@ -24,8 +25,9 @@ namespace parteeengine::rendering {
 
         NativeGraphicsContext getNativeContext() const override;
         WindowConfig getConfig() const override;
+        void config(WindowConfig config);
 
-        void setEventCallback(WindowEventCallback callback) override;
+        // void setEventCallback(WindowEventCallback callback) override;
 
     private:
         static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -33,11 +35,10 @@ namespace parteeengine::rendering {
 
         HWND hwnd = nullptr;
         HDC hdc = nullptr;
-        HGLRC hglrc = nullptr;
+        
+        WindowConfig windowConfig = {};
 
-        WindowConfig config = {};
-
-        WindowEventCallback eventCallback;
+        // WindowEventCallback eventCallback;
 
     };
 

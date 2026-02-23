@@ -25,16 +25,16 @@ namespace parteeengine {
         T& addComponent(Entity entity);
 
         template<ComponentType T>
-        T* getComponent(Entity entity);
+        T* getComponent(Entity entity) const;
 
         template<ComponentType T>
         bool hasComponent(Entity entity);
 
         template<ComponentType T>
-        std::vector<T>& getComponentArray();
+        std::vector<T>& getComponentArray() const;
 
         template<ComponentType T>
-        std::vector<std::pair<Entity, T&>> getEntityComponentPairs();
+        std::vector<std::pair<Entity, T&>> getEntityComponentPairs() const;
 
 
     private:
@@ -63,7 +63,7 @@ namespace parteeengine {
     }
 
     template<ComponentType T>
-    T* EntityManager::getComponent(Entity entity) {
+    T* EntityManager::getComponent(Entity entity) const {
         if (!isValid(entity)) {
             throw std::runtime_error("Invalid entity");
         }
@@ -96,7 +96,7 @@ namespace parteeengine {
     }   
 
     template<ComponentType T>
-    std::vector<T>& EntityManager::getComponentArray() {
+    std::vector<T>& EntityManager::getComponentArray() const {
         std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {
@@ -108,7 +108,7 @@ namespace parteeengine {
     }
 
     template<ComponentType T>
-    std::vector<std::pair<Entity, T&>> EntityManager::getEntityComponentPairs() {
+    std::vector<std::pair<Entity, T&>> EntityManager::getEntityComponentPairs() const {
         std::type_index id = T::getType();
         auto it = entityComponents.find(id);
         if (it == entityComponents.end()) {

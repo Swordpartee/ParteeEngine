@@ -1,4 +1,4 @@
-#include "engine/rendering/window/W32Window.hpp"
+#include "engine/rendering/windows/W32Window.hpp"
 
 namespace parteeengine::rendering {
 
@@ -8,9 +8,9 @@ namespace parteeengine::rendering {
         destroy();
     }
 
-    bool W32Window::create(const WindowConfig& windowConfig) {
-        config = windowConfig;
-        return create();
+    bool W32Window::create(const WindowConfig& config) {
+        this->windowConfig = config;
+        return this->create();
     }
 
     bool W32Window::create() {
@@ -26,13 +26,13 @@ namespace parteeengine::rendering {
 
         DWORD stype = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 
-        RECT rect = {0, 0, config.width, config.height};
+        RECT rect = {0, 0, windowConfig.width, windowConfig.height};
         AdjustWindowRect(&rect, stype, FALSE);
 
         hwnd = CreateWindowEx(
             0, // Optional window styles
             wc.lpszClassName, // Window class
-            config.title, // Window title
+            windowConfig.title, // Window title
             stype,  // Window style
             CW_USEDEFAULT, CW_USEDEFAULT, // Size and position
             rect.right - rect.left, // Width
@@ -47,14 +47,11 @@ namespace parteeengine::rendering {
 
         hdc = GetDC(hwnd);
         return hdc != nullptr;
+
+        
     }
 
     bool W32Window::destroy() {
-        if (hglrc) {
-            wglMakeCurrent(nullptr, nullptr);
-            wglDeleteContext(hglrc);
-            hglrc = nullptr;
-        }
         if (hdc && hwnd) {
             ReleaseDC(hwnd, hdc);
             hdc = nullptr;
@@ -66,17 +63,10 @@ namespace parteeengine::rendering {
         return true;
     }
 
-    void W32Window::setConfig(const WindowConfig& newConfig) {
-        config = newConfig;
-        
-        if (hwnd) {
-            UpdateWindow(hwnd);
-        }
-    }
-    
-
     bool W32Window::show() {
-        ShowWindow(hwnd, SW_SHOW);
+        if (!ShowWindow(hwnd, SW_SHOW)) {
+            return false;
+        }
         return UpdateWindow(hwnd);
     }
 
@@ -101,7 +91,7 @@ namespace parteeengine::rendering {
     }
 
     NativeGraphicsContext W32Window::getNativeContext() const {
-        return NativeGraphicsContext{hdc, hglrc, hwnd};
+        return NativeGraphicsContext{hdc, hwnd};
     }
 
     LRESULT CALLBACK W32Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -121,27 +111,31 @@ namespace parteeengine::rendering {
         return DefWindowProc(hwnd, msg, wParam, lParam);
     }
 
-    void W32Window::handleMessage(UINT msg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam) {
-        if (eventCallback) {
-            switch (msg) {
-                case WM_CLOSE:
-                    eventCallback(WindowEvent{WindowEvent::Type::Close});
-                    break;
-                case WM_SIZE:
-                    eventCallback(WindowEvent{WindowEvent::Type::Resize});
-                    break;
-                default:
-                    break;
-            }
-        }
+    void W32Window::handleMessage([[maybe_unused]]UINT msg, [[maybe_unused]]WPARAM wParam, [[maybe_unused]]LPARAM lParam) {
+        // if (eventCallback) {
+        //     switch (msg) {
+        //         case WM_CLOSE:
+        //             eventCallback(WindowEvent{WindowEvent::Type::Close});
+        //             break;
+        //         case WM_SIZE:
+        //             eventCallback(WindowEvent{WindowEvent::Type::Resize});
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
     }
 
     WindowConfig W32Window::getConfig() const {
-        return config;
+        return windowConfig;
+    }
+    
+    void W32Window::config(WindowConfig config) {
+        this->windowConfig = config;
     }
 
-    void W32Window::setEventCallback(WindowEventCallback callback) {
-        eventCallback = callback;
-    }
+    // void W32Window::setEventCallback(WindowEventCallback callback) {
+    //     eventCallback = callback;
+    // }
 
 } // namespace parteeengine::rendering

@@ -4,18 +4,18 @@
 
 namespace parteeengine::rendering {
 
+    struct IRenderContext {};
+
+    template<typename Renderer>
+    struct RenderContext;
     class IWindow;
 
     class IRenderer {
-    public:
-        virtual ~IRenderer() = default;
 
         virtual bool initialize(IWindow& window) = 0;
 
-        virtual bool render(RenderFrame& frame) = 0;
+        virtual bool render(RenderFrame& frame, IWindow& window) = 0;
 
-    protected:
-        IRenderer() = default;
     };
-    
+
 } // namespace parteeengine::rendering

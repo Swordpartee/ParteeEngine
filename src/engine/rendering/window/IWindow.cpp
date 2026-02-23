@@ -1,6 +1,6 @@
-#include "engine/rendering/window/IWindow.hpp"
+#include "engine/rendering/windows/IWindow.hpp"
 
-#include "engine/rendering/window/W32Window.hpp"
+#include "engine/rendering/windows/W32Window.hpp"
 
 namespace parteeengine::rendering {
     std::unique_ptr<IWindow> IWindow::createPlatformWindow() {

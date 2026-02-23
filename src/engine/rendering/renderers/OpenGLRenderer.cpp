@@ -1,15 +1,10 @@
 #include "engine/rendering/renderers/OpenGLRenderer.hpp"
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <GL/gl.h>
+#include "engine/rendering/renderers/OpenGLRenderContext.hpp"
 
 namespace parteeengine::rendering {
-
+    
     bool OpenGLRenderer::initialize(IWindow& window) {
-        windowPtr = &window;
         PIXELFORMATDESCRIPTOR pfd = {
             sizeof(PIXELFORMATDESCRIPTOR),
             1,
@@ -19,14 +14,14 @@ namespace parteeengine::rendering {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             24, // Depth buffer
             8,  // Stencil buffer
-            0, PFD_MAIN_PLANE, 0, 0, 0, 0};
-
-        HDC hdc = static_cast<HDC>(window.getNativeContext().deviceContext);
+            0, PFD_MAIN_PLANE, 0, 0, 0, 0
+        };
+        
+        hdc = static_cast<HDC>(window.getNativeContext().deviceContext);
         int pixelFormat = ChoosePixelFormat(hdc, &pfd);
         SetPixelFormat(hdc, pixelFormat, &pfd);
-
         
-        HGLRC hglrc = wglCreateContext(hdc);
+        hglrc = wglCreateContext(hdc);
         wglMakeCurrent(hdc, hglrc);
 
         // Setup viewport
@@ -38,23 +33,7 @@ namespace parteeengine::rendering {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        // Map screen coordinates directly: (0,0) at top-left to (width, height) at bottom-right
-        float left = 0.0f;
-        float right = (float)rect.right;
-        float bottomCoord = (float)rect.bottom;
-        float top = 0.0f;
-        float nearPlane = -1.0f;
-        float farPlane = 1.0f;
-
-        // Manual orthographic projection matrix
-        float orthoMatrix[16] = {
-            2.0f / (right - left), 0, 0, 0,
-            0, 2.0f / (top - bottomCoord), 0, 0,
-            0, 0, -2.0f / (farPlane - nearPlane), 0,
-            -(right + left) / (right - left), -(top + bottomCoord) / (top - bottomCoord), -(farPlane + nearPlane) / (farPlane - nearPlane), 1
-        };
-        
-        glLoadMatrixf(orthoMatrix);
+        glOrtho(0, (float)rect.right, (float)rect.bottom, 0, -1, 1);
         
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -66,29 +45,21 @@ namespace parteeengine::rendering {
         glEnable(GL_LINE_SMOOTH);
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         return true;
-    }
+    };
 
-    bool OpenGLRenderer::render(RenderFrame& frame) {
-        // Clear the screen
+    bool OpenGLRenderer::render(RenderFrame& frame, [[maybe_unused]]IWindow& window) {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        for (const auto& command : frame.commands) {
-            if (command->getType() == typeid(QuadRenderCommand)) {
-                const auto* quad = static_cast<const QuadRenderCommand*>(command.get());
+        RenderContext<OpenGLRenderer> context { hdc, hglrc };
 
-                glColor4f(quad->color.r, quad->color.g, quad->color.b, quad->color.a);
-                glBegin(GL_QUADS);
-                glVertex2f(quad->quad.position.x, quad->quad.position.y);
-                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y);
-                glVertex2f(quad->quad.position.x + quad->quad.scale.x, quad->quad.position.y + quad->quad.scale.y);
-                glVertex2f(quad->quad.position.x, quad->quad.position.y + quad->quad.scale.y);
-                glEnd();
-
-            }
+        for (auto& [type, bucket] : frame.buckets) {
+            auto it = handlers.find(type);
+            if (it != handlers.end())
+                it->second(*bucket, context);
         }
 
         return true;
-    }
+    };
 
 } // namespace parteeengine::rendering

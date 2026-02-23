@@ -6,7 +6,7 @@ namespace parteeengine {
 
     // Data passed to modules each frame.
     struct ModuleInput {
-        EntityManager& entityManager;
+        const EntityManager& entityManager;
         float dt = 0; // Delta time since last frame
     };
 
