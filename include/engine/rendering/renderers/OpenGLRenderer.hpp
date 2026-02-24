@@ -2,7 +2,6 @@
 
 #include "engine/rendering/renderers/IRenderer.hpp"
 #include "engine/rendering/windows/IWindow.hpp"
-#include "engine/rendering/core/RenderBinding.hpp"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

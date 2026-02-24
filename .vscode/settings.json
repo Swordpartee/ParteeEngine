@@ -82,6 +82,9 @@
         "cinttypes": "cpp",
         "variant": "cpp"
     },
+    "editor.tokenColorCustomizations": {
+    
+    },
     "cmake.ignoreCMakeListsMissing": true,
     "cmake.generator": "Visual Studio 17 2022",
     "cmake.preferredGenerators": [

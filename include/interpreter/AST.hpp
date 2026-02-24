@@ -21,6 +21,11 @@ namespace ParteeEngine {
     // We keep semantic nodes (likecan expressions) and omit raw punctuation.
     struct ASTNode { virtual ~ASTNode() = default; };
 
+    // Expr (Expression): base node for any evaluatable expression.
+    struct Expr : ASTNode { 
+        virtual ~Expr() = default;
+    };
+
     // Program: top-level node holding a list of expressions/statements
     struct Program : ASTNode {
         std::vector<Expr *> statements;
@@ -29,9 +34,6 @@ namespace ParteeEngine {
                 delete stmt;
         }
     };
-
-    // Expr (Expression): base node for any evaluatable expression.
-    struct Expr : ASTNode { };
 
     struct ErrorExpr : Expr {
         std::string message;

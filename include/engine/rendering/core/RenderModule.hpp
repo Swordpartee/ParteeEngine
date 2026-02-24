@@ -2,7 +2,6 @@
 
 #include "engine/core/modules/Module.hpp"
 #include "engine/rendering/windows/IWindow.hpp"
-#include "engine/rendering/core/RenderBinding.hpp"
 
 #include <unordered_map>
 #include <typeindex>
@@ -18,6 +17,10 @@ namespace parteeengine::rendering {
     template<typename CommandType>
     struct RenderCommandBucket;
     struct RenderFrame;
+    
+    using GatherFunction = std::function<void(RenderFrame&, const EntityManager&)>;
+    template<typename Renderer, typename CommandType>
+    using RenderFunction = std::function<void(RenderCommandBucket<CommandType>&, const RenderContext<Renderer>&)>;
 
     template<typename Renderer>
     class RenderModule : public Module {
@@ -31,7 +34,7 @@ namespace parteeengine::rendering {
 
         template <typename CommandType>
         RenderModule<Renderer>& registerComponent(GatherFunction gatherer, RenderFunction<Renderer, CommandType> renderFunc);
-
+\
     private:
         std::unique_ptr<IWindow> window;
         Renderer renderer;

@@ -4,6 +4,9 @@
 #include "engine/core/entities/EntityManager.hpp"
 #include "engine/input/InputSystem.hpp"
 
+#include <iostream>
+#include <ctime>
+
 namespace parteeengine {
 
     class Engine {
@@ -18,7 +21,6 @@ namespace parteeengine {
         // Gets a pointer to the module of type T, or nullptr if it doesn't exist.
         template<EngineModule T>
         T* getModule();
-
         // Entity management
         Entity createEntity();
         void destroyEntity(const Entity entity);
@@ -33,6 +35,7 @@ namespace parteeengine {
 
     private:
         bool running = false; // Engine running state
+        std::time_t lastFrameTime; // Time of the last frame, used for delta time calculation
 
         ModuleInput moduleInput; // Input passed to modules each frame
 

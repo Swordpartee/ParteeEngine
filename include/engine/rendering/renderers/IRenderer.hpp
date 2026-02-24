@@ -1,6 +1,7 @@
 #pragma once
 
 #include "engine/rendering/core/RenderFrame.hpp"
+#include "engine/rendering/core/RenderModule.hpp"
 
 namespace parteeengine::rendering {
 

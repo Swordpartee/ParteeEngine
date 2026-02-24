@@ -12,6 +12,7 @@
 #include "engine/rendering/renderables/RenderQuad.hpp"
 
 #include <iostream>
+#include <random>
 
 using namespace parteeengine;
 
@@ -27,18 +28,25 @@ int main() {
 
     input::InputSystem::registerDevice<input::Keyboard>();
 
-    Entity entity = engine.createEntity();
-    engine.addComponent<TransformComponent2d>(entity) 
-        = {200.f, 200.f};
-    engine.addComponent<rendering::RenderQuadComponent>(entity)
-        = {{1.f, 0.f, 0.f, 1.f}};
-    engine.addComponent<BehaviorComponent>(entity)
-        = {[](Entity entity, const ModuleInput& input) {
-            if (input::InputSystem::isActive(input::bindings::KeySpace)) {
-                auto& transform = input.entityManager.getComponent<TransformComponent2d>(entity)->transform;
-                transform.position.x += 50.f * input.dt;
-            }
-        }};
+    // Random number generators for positions and colors
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> posDistX(0.f, 800.f);
+    std::uniform_real_distribution<float> posDistY(0.f, 600.f);
+    std::uniform_real_distribution<float> colorDist(0.f, 1.f);
+
+    // Create 100 randomly placed and colored entities
+    for (int i = 0; i < 1000; ++i) {
+        Entity entity = engine.createEntity();
+        
+        // Add transform with random position
+        engine.addComponent<TransformComponent2d>(entity) 
+            = {posDistX(gen), posDistY(gen)};
+        
+        // Add render component with random color
+        engine.addComponent<rendering::RenderQuadComponent>(entity)
+            = {{colorDist(gen), colorDist(gen), colorDist(gen), 1.f}};
+    }
 
     engine.run();
 

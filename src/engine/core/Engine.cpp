@@ -19,18 +19,23 @@ namespace parteeengine {
     }
 
     void Engine::run() {
+        lastFrameTime = std::chrono::steady_clock::now().time_since_epoch().count();
         if (!moduleManager.initializeModules(moduleInput)) {
             return;
         }
 
         running = true;
         while (running) {
-            moduleInput.dt = 0.016f; // Placeholder for delta time calculation
+            std::time_t currentFrameTime = std::chrono::steady_clock::now().time_since_epoch().count();
+            moduleInput.dt = static_cast<float>(currentFrameTime - lastFrameTime) / 1000000000.0f; // Convert nanoseconds to seconds
+            lastFrameTime = currentFrameTime;
             if (!moduleManager.updateModules(moduleInput)) {
                 running = false;
             }
 
             input::InputSystem::poll();
+
+            std::cout << "Frame Time: " << moduleInput.dt << " seconds\n";
         }
     }
 

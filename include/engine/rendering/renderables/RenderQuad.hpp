@@ -1,6 +1,5 @@
 #pragma once
 
-#include "engine/rendering/core/RenderBinding.hpp"
 #include "engine/core/entities/EntityManager.hpp"
 #include "engine/core/entities/Component.hpp"
 #include "engine/util/Color.hpp"
