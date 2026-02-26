@@ -1,4 +1,4 @@
-#include "interpreter/ScriptLoader.hpp"
+#include "engineinterpreter/ScriptLoader.hpp"
 #include <iostream>
 #include <filesystem>
 

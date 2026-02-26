@@ -1,9 +1,9 @@
 #pragma once
 
-#include "interpreter/Lexer.hpp"
-#include "interpreter/Parser.hpp"
-#include "interpreter/AST.hpp"
-#include "interpreter/ScriptLoader.hpp"
+#include "engineinterpreter/Lexer.hpp"
+#include "engineinterpreter/Parser.hpp"
+#include "engineinterpreter/AST.hpp"
+#include "engineinterpreter/ScriptLoader.hpp"
 
 #include <variant>
 #include <unordered_map>

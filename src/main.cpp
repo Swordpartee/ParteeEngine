@@ -11,11 +11,11 @@
 #include "engine/core/entities/TransformComponent2d.hpp"
 #include "engine/rendering/renderables/RenderQuad.hpp"
 
-#include "interpreter/Lexer.hpp"
-#include "interpreter/Parser.hpp"
-#include "interpreter/Interpreter.hpp"
-#include "interpreter/ScriptLoader.hpp"
-#include "interpreter/AST.hpp"
+#include "engineinterpreter/Lexer.hpp"
+#include "engineinterpreter/Parser.hpp"
+#include "engineinterpreter/Interpreter.hpp"
+#include "engineinterpreter/ScriptLoader.hpp"
+#include "engineinterpreter/AST.hpp"
 
 #include <iostream>
 #include <random>
