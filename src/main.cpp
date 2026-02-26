@@ -11,12 +11,19 @@
 #include "engine/core/entities/TransformComponent2d.hpp"
 #include "engine/rendering/renderables/RenderQuad.hpp"
 
+#include "interpreter/Lexer.hpp"
+#include "interpreter/Parser.hpp"
+#include "interpreter/Interpreter.hpp"
+#include "interpreter/ScriptLoader.hpp"
+#include "interpreter/AST.hpp"
+
 #include <iostream>
 #include <random>
+#include <filesystem>
 
 using namespace parteeengine;
 
-int main() {
+int engine() {
     Engine engine;
 
     engine.createModule<BehaviorModule>();
@@ -51,4 +58,18 @@ int main() {
     engine.run();
 
     return 0;
+}
+
+int lexerTest() {
+
+        interpreter::Interpreter interpreter;
+
+        interpreter.interpret("assets/scripts/exampleCode.par", nullptr);
+        
+        return 0;
+}
+
+int main() {
+    // return engine();
+    return lexerTest();
 }

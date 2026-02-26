@@ -3,7 +3,7 @@
 #include <cctype>
 #include <vector>
 
-namespace ParteeEngine {
+namespace interpreter {
 
     const std::unordered_map<std::string, TokenType> Lexer::keywords = {
         {"use", TokenType::KW_Use},
@@ -282,4 +282,4 @@ namespace ParteeEngine {
         return tokens;
     }
 
-} // namespace ParteeEngine
+} // namespace interpreter

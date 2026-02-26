@@ -8,7 +8,7 @@
 
 #define ERROR_LOCATION(cursor) " at line " << cursor.peek().line << ", column " << cursor.peek().column
 
-namespace ParteeEngine {
+namespace interpreter {
 	// Cursor impl
 	const Token& Parser::Cursor::peek() const { return (*tokens)[pos]; }
 	const Token& Parser::Cursor::advance() { return (*tokens)[pos++]; }
@@ -445,7 +445,7 @@ namespace ParteeEngine {
 		}
 
 		// Return the program node as an Expr* for compatibility
-		return {reinterpret_cast<Expr*>(program), !errorReported, nullptr};
+		return {program, !errorReported, nullptr};
 	}
 
 	void Parser::synchronize(Cursor& cursor) {

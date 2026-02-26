@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-namespace ParteeEngine {
+namespace interpreter {
 
     class ScriptLoader {
     public:
@@ -25,4 +25,4 @@ namespace ParteeEngine {
         static bool tryLoadScript(const std::string& filePath, std::string& outContent);
     };
 
-} // namespace ParteeEngine
+} // namespace interpreter

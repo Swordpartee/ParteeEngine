@@ -4,7 +4,7 @@
 #include <string>
 #include <stack>
 
-namespace ParteeEngine {
+namespace interpreter {
 
     // Forward declarations of AST (Abstract Syntax Tree) node types
     struct ASTNode;
@@ -21,7 +21,7 @@ namespace ParteeEngine {
     // 'expr' is the resulting AST expression (or nullptr on failure).
     // 'ok' indicates success; 'message' carries a short error description on failure.
     struct ParseResult {
-        Expr* expr;
+        Program* program;
         bool ok;
         const char* message;
     };
@@ -103,4 +103,4 @@ namespace ParteeEngine {
 
     };
 
-}   // namespace ParteeEngine
+}   // namespace interpreter

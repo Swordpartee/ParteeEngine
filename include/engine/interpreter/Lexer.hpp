@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace ParteeEngine {
+namespace interpreter {
 
     enum class TokenType {
         // Literals
@@ -188,4 +188,4 @@ namespace ParteeEngine {
         Token scanOperator();
     };
 
-} // namespace ParteeEngine
+} // namespace interpreter

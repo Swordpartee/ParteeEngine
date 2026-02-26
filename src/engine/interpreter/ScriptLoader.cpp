@@ -2,7 +2,7 @@
 #include <iostream>
 #include <filesystem>
 
-namespace ParteeEngine {
+namespace interpreter {
 
     std::string ScriptLoader::loadScript(const std::string& filePath) {
         // Construct a set of candidate paths to try
@@ -18,10 +18,14 @@ namespace ParteeEngine {
         // 3) In CWD/src
         candidates.push_back(cwd / "src" / fileName);
 
-        // 4) Walk up to 6 parents and check both the root and its src/
+        // 4) Walk up to 6 parents and check the full path and just the filename
         std::filesystem::path cur = cwd;
         for (int i = 0; i < 6; ++i) {
+            // Check the full relative path (e.g., assets/scripts/exampleCode.par)
+            candidates.push_back(cur / requested);
+            // Check just the filename
             candidates.push_back(cur / fileName);
+            // Check in src subdirectory
             candidates.push_back(cur / "src" / fileName);
             if (cur.has_parent_path()) {
                 cur = cur.parent_path();
@@ -50,4 +54,4 @@ namespace ParteeEngine {
         throw std::runtime_error("Failed to open script file: " + filePath);
     }
 
-} // namespace ParteeEngine
+} // namespace interpreter

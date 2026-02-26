@@ -8,7 +8,7 @@ namespace parteeengine::rendering {
     struct WindowConfig {
         int width = 800;
         int height = 600;
-        const char* title = "ParteeEngine Window";
+        const char* title = "interpreter Window";
     };
 
     // struct WindowEvent : public Event {
