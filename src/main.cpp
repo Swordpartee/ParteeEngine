@@ -11,11 +11,11 @@
 #include "engine/core/entities/TransformComponent2d.hpp"
 #include "engine/rendering/renderables/RenderQuad.hpp"
 
-#include "engineinterpreter/Lexer.hpp"
-#include "engineinterpreter/Parser.hpp"
-#include "engineinterpreter/Interpreter.hpp"
-#include "engineinterpreter/ScriptLoader.hpp"
-#include "engineinterpreter/AST.hpp"
+#include "engine/interpreter/Lexer.hpp"
+#include "engine/interpreter/Parser.hpp"
+#include "engine/interpreter/Interpreter.hpp"
+#include "engine/interpreter/ScriptLoader.hpp"
+#include "engine/interpreter/AST.hpp"
 
 #include <iostream>
 #include <random>
@@ -32,6 +32,8 @@ int engine() {
             rendering::RenderQuadComponent::gatherer(),
             rendering::RenderQuadComponent::openGLHandler()
         );
+
+    engine.addScript("assets/scripts/exampleCode.par");
 
     input::InputSystem::registerDevice<input::Keyboard>();
 
@@ -56,20 +58,10 @@ int engine() {
     }
 
     engine.run();
-
+    
     return 0;
 }
 
-int lexerTest() {
-
-        interpreter::Interpreter interpreter;
-
-        interpreter.interpret("assets/scripts/exampleCode.par", nullptr);
-        
-        return 0;
-}
-
 int main() {
-    // return engine();
-    return lexerTest();
+    return engine();
 }

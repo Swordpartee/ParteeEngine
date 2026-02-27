@@ -1,7 +1,7 @@
-#include "engineinterpreter/Parser.hpp"
+#include "engine/interpreter/Parser.hpp"
 
-#include "engineinterpreter/AST.hpp"
-#include "engineinterpreter/Lexer.hpp"
+#include "engine/interpreter/AST.hpp"
+#include "engine/interpreter/Lexer.hpp"
 
 #include <cstddef>
 #include <memory>

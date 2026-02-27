@@ -1,4 +1,4 @@
-#include "engineinterpreter/Interpreter.hpp"
+#include "engine/interpreter/Interpreter.hpp"
 
 namespace interpreter {
 
@@ -42,8 +42,7 @@ namespace interpreter {
 
     ReturnSignal::ReturnSignal(const Value& val) : returnValue(val) {}
 
-    void Interpreter::interpret(const std::string& source, Engine* enginePtr) {
-        this->engine = enginePtr;
+    void Interpreter::interpret(const std::string& source) {
         Lexer lexer(ScriptLoader::loadScript(source));
         auto tokens = lexer.tokenize();
 
@@ -98,6 +97,10 @@ namespace interpreter {
                 return Value((double)std::get<std::string>(args[0].data).size());
             throw std::runtime_error("len() expects array or string");
         }));
+    }
+
+    void Interpreter::ExposeObject(const std::string& name, const Value& value) {
+        globalEnv->define(name, value);
     }
 
     void Interpreter::execute(Program* program) {

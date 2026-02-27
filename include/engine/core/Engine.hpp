@@ -3,9 +3,14 @@
 #include "engine/core/modules/ModuleManager.hpp"
 #include "engine/core/entities/EntityManager.hpp"
 #include "engine/input/InputSystem.hpp"
+#include "engine/interpreter/Interpreter.hpp"
+#include "engine/interpreter/ObjectBuilder.hpp"
 
 #include <iostream>
 #include <ctime>
+#include <vector>
+#include <string>
+#include <unordered_map>
 
 namespace parteeengine {
 
@@ -17,6 +22,10 @@ namespace parteeengine {
         // Adds a module of type T to the engine. Throws if a module of that type already exists.
         template<EngineModule T>
         T& createModule();
+
+        interpreter::Value getEngineInterface();
+
+        void addScript(std::string script);
 
         // Gets a pointer to the module of type T, or nullptr if it doesn't exist.
         template<EngineModule T>
@@ -41,6 +50,9 @@ namespace parteeengine {
 
         EntityManager entityManager; // Manages entity creation and destruction
         ModuleManager moduleManager; // Manages engine modules
+
+        interpreter::Interpreter interpreter;  // Scripting interpreter 
+        std::vector<std::string> scripts; // List of script sources to execute
     };
 
     template<EngineModule T>

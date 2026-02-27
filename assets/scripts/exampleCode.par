@@ -1,13 +1,18 @@
 # use "weapons.par"
 
-# Engine.addModule(PhysicsModule)
-# Engine.addModule(Render2dModule)
-# Engine.addModule(InputModule)
+player = Engine.createEntity()
+# player.add(TransformComponent)
 
-# Entity = 0
+player2 = Engine.createEntity()
+print("player2 created with id" + player2.__id)
 
-# player = Entity.create()
-# player.add(RenderComponent, PhysicsComponent, ColliderComponent)
+print("Player created with ID: " + player.__id)
+
+if player2.__id == 1 
+    print("player has id 1")
+else
+    print("player has id 0")
+end
 
 function calculateDamage(base, multiplier)
     return base * multiplier
@@ -20,7 +25,6 @@ for enemy in enemies
         print("Enemy health: " + calculateDamage(enemy, 1.5))
     end
 end
-
 
 allies = [1,2,3,4]
 
@@ -45,7 +49,7 @@ end
 # end
 
 if player.health > 0
-    print("Player is alive")
+    print("Player is alive")x
 else if player.health == 0
     print("Player is neither alive nor dead")
 else 

@@ -1,14 +1,20 @@
 #pragma once
 
-#include "engineinterpreter/Lexer.hpp"
-#include "engineinterpreter/Parser.hpp"
-#include "engineinterpreter/AST.hpp"
-#include "engineinterpreter/ScriptLoader.hpp"
+#include "engine/interpreter/Lexer.hpp"
+#include "engine/interpreter/Parser.hpp"
+#include "engine/interpreter/AST.hpp"
+#include "engine/interpreter/ScriptLoader.hpp"
 
 #include <variant>
 #include <unordered_map>
 #include <functional>
 #include <memory>
+
+namespace parteeengine {
+
+    class Engine;
+
+} // namespace parteeengine
 
 namespace interpreter {
 
@@ -95,13 +101,15 @@ namespace interpreter {
 
     class Interpreter {
     public:
-        Interpreter() = default;
+        Interpreter(const parteeengine::Engine* enginePtr) : engine(enginePtr) {}
 
-        void interpret(const std::string& source, Engine* engine);
+        void interpret(const std::string& source);
+
+        void ExposeObject(const std::string& name, const Value& value);
 
     private:
         std::shared_ptr<Environment> globalEnv = Environment::make();
-        Engine* engine = nullptr; // Pointer to the game engine for integration
+        const parteeengine::Engine* engine; // Pointer to the game engine for integration
 
         void registerGlobals();
         void execute(Program* program);
